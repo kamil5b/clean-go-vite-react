@@ -6,7 +6,7 @@ This guide documents the architecture and structure of the `/internal` package, 
 
 ## Architecture Layers
 
-### 1. **Model Layer** (`/internal/model`)
+### 1. **Model Layer** (`/backend/model`)
 Defines domain models and data structures.
 
 **Files:**
@@ -22,7 +22,7 @@ Defines domain models and data structures.
 
 ---
 
-### 2. **Repository Layer** (`/internal/repository`)
+### 2. **Repository Layer** (`/backend/repository`)
 Defines data access abstractions and implements persistence.
 
 **Files:**
@@ -47,7 +47,7 @@ type MessageRepository interface {
 
 ---
 
-### 3. **Service Layer** (`/internal/service`)
+### 3. **Service Layer** (`/backend/service`)
 Implements business logic and orchestrates repository operations.
 
 **Files:**
@@ -78,12 +78,12 @@ type messageService struct{}
 
 ---
 
-### 4. **Handler/API Layer** (`/internal/api`)
+### 4. **Handler/API Layer** (`/backend/api`)
 Exposes HTTP endpoints and handles HTTP requests/responses.
 
 **Structure:**
 ```
-/internal/api/
+/backend/api/
 ├── router.go           # Route configuration
 ├── handler/
 │   ├── message.go      # Message HTTP handler
@@ -115,7 +115,7 @@ func (h *MessageHandler) GetMessage(c echo.Context) error {
 
 ---
 
-### 5. **Web Layer** (`/internal/web`)
+### 5. **Web Layer** (`/backend/web`)
 Serves static web assets and frontend files.
 
 **Files:**
@@ -123,7 +123,7 @@ Serves static web assets and frontend files.
 
 ---
 
-### 6. **Worker/Job Layer** (`/internal/worker`)
+### 6. **Worker/Job Layer** (`/backend/worker`)
 Implements background job processing using Asynq.
 
 **Files:**
@@ -152,7 +152,7 @@ func (p *EmailProcessor) ProcessTask(ctx context.Context, t *asynq.Task) error {
 
 ---
 
-### 7. **Task Layer** (`/internal/task`)
+### 7. **Task Layer** (`/backend/task`)
 Defines background job payloads and task types.
 
 **Files:**
@@ -161,7 +161,7 @@ Defines background job payloads and task types.
 
 ---
 
-### 8. **Dependency Injection** (`/internal/di`)
+### 8. **Dependency Injection** (`/backend/di`)
 Manages dependency initialization and wiring.
 
 **Files:**
@@ -187,7 +187,7 @@ container.Echo.Start(":8080")
 
 ---
 
-### 9. **Platform/Configuration** (`/internal/platform`)
+### 9. **Platform/Configuration** (`/backend/platform`)
 Infrastructure configuration and external service setup.
 
 **Files:**
@@ -226,13 +226,13 @@ ASYNQ_MAX_RETRIES=3
 ```
 HTTP Request
     ↓
-Router (/internal/api/router.go)
+Router (/backend/api/router.go)
     ↓
-Handler (/internal/api/handler/*.go)
+Handler (/backend/api/handler/*.go)
     ↓
-Service (/internal/service/*.go)
+Service (/backend/service/*.go)
     ↓
-Repository (/internal/repository/*.go)
+Repository (/backend/repository/*.go)
     ↓
 HTTP Response
 ```
@@ -243,11 +243,11 @@ Task Enqueue
     ↓
 Task Queue (Redis via Asynq)
     ↓
-Worker (/internal/worker/*.go)
+Worker (/backend/worker/*.go)
     ↓
-Service (/internal/service/*.go)
+Service (/backend/service/*.go)
     ↓
-Repository (/internal/repository/*.go)
+Repository (/backend/repository/*.go)
     ↓
 Completion (Success/Retry/Failed)
 ```
@@ -279,25 +279,25 @@ Completion (Success/Retry/Failed)
 ## Adding a New Feature
 
 ### 1. Create Domain Models
-Add to `/internal/model/` if new domain concepts needed.
+Add to `/backend/model/` if new domain concepts needed.
 
 ### 2. Define Repository Interface
-Add interface to `/internal/repository/interfaces.go`.
+Add interface to `/backend/repository/interfaces.go`.
 
 ### 3. Implement Repository
-Add implementation to `/internal/repository/memory.go` (or new file).
+Add implementation to `/backend/repository/memory.go` (or new file).
 
 ### 4. Create Service Interface and Implementation
-Add interface and struct to `/internal/service/feature.go`.
+Add interface and struct to `/backend/service/feature.go`.
 
 ### 5. Create Handler
-Add HTTP handler to `/internal/api/handler/feature.go`.
+Add HTTP handler to `/backend/api/handler/feature.go`.
 
 ### 6. Register Route
-Update `/internal/api/router.go` to register the new endpoint.
+Update `/backend/api/router.go` to register the new endpoint.
 
 ### 7. Wire Dependencies
-Update `/internal/di/container.go` to inject dependencies.
+Update `/backend/di/container.go` to inject dependencies.
 
 ### 8. Write Tests
 Add unit tests and integration tests for new components.
@@ -408,8 +408,8 @@ import (
     
     "github.com/labstack/echo/v4"
     
-    "github.com/kamil5b/clean-go-vite-react/internal/model"
-    "github.com/kamil5b/clean-go-vite-react/internal/service"
+    "github.com/kamil5b/clean-go-vite-react/backend/model"
+    "github.com/kamil5b/clean-go-vite-react/backend/service"
 )
 ```
 
@@ -438,16 +438,16 @@ ASYNQ_MAX_RETRIES=3
 
 ```bash
 # Run all tests
-go test ./internal/...
+go test ./backend/...
 
 # Run tests with coverage
-go test -cover ./internal/...
+go test -cover ./backend/...
 
 # Run specific package tests
-go test ./internal/service/...
+go test ./backend/service/...
 
 # Run tests with verbose output
-go test -v ./internal/...
+go test -v ./backend/...
 ```
 
 ---

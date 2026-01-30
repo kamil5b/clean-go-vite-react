@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 
 	"github.com/hibiken/asynq"
-	"github.com/kamil5b/clean-go-vite-react/internal/service"
-	"github.com/kamil5b/clean-go-vite-react/internal/task"
+	"github.com/kamil5b/clean-go-vite-react/backend/service"
+	"github.com/kamil5b/clean-go-vite-react/backend/task"
 )
 
 // EmailProcessor handles email notification tasks

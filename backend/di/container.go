@@ -1,11 +1,11 @@
 package di
 
 import (
-	"github.com/kamil5b/clean-go-vite-react/internal/api"
-	"github.com/kamil5b/clean-go-vite-react/internal/api/handler"
-	"github.com/kamil5b/clean-go-vite-react/internal/platform"
-	"github.com/kamil5b/clean-go-vite-react/internal/repository"
-	"github.com/kamil5b/clean-go-vite-react/internal/service"
+	"github.com/kamil5b/clean-go-vite-react/backend/api"
+	"github.com/kamil5b/clean-go-vite-react/backend/api/handler"
+	"github.com/kamil5b/clean-go-vite-react/backend/platform"
+	"github.com/kamil5b/clean-go-vite-react/backend/repository"
+	"github.com/kamil5b/clean-go-vite-react/backend/service"
 	"github.com/labstack/echo/v4"
 )
 

@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/kamil5b/clean-go-vite-react/internal/di"
-	"github.com/kamil5b/clean-go-vite-react/internal/platform"
-	"github.com/kamil5b/clean-go-vite-react/internal/web"
+	"github.com/kamil5b/clean-go-vite-react/backend/di"
+	"github.com/kamil5b/clean-go-vite-react/backend/platform"
+	"github.com/kamil5b/clean-go-vite-react/backend/web"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kamil5b/clean-go-vite-react/internal/platform"
+	"github.com/kamil5b/clean-go-vite-react/backend/platform"
 )
 
 func TestNewContainer_CreatesAllDependencies(t *testing.T) {

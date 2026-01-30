@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/hibiken/asynq"
-	"github.com/kamil5b/clean-go-vite-react/internal/task"
+	"github.com/kamil5b/clean-go-vite-react/backend/task"
 )
 
 // MockEmailService is a mock implementation of EmailService for testing

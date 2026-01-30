@@ -7,10 +7,10 @@ import (
 	"syscall"
 
 	"github.com/joho/godotenv"
-	"github.com/kamil5b/clean-go-vite-react/internal/platform"
-	"github.com/kamil5b/clean-go-vite-react/internal/service"
-	"github.com/kamil5b/clean-go-vite-react/internal/task"
-	"github.com/kamil5b/clean-go-vite-react/internal/worker"
+	"github.com/kamil5b/clean-go-vite-react/backend/platform"
+	"github.com/kamil5b/clean-go-vite-react/backend/service"
+	"github.com/kamil5b/clean-go-vite-react/backend/task"
+	"github.com/kamil5b/clean-go-vite-react/backend/worker"
 )
 
 func main() {

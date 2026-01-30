@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/kamil5b/clean-go-vite-react/internal/repository"
+	"github.com/kamil5b/clean-go-vite-react/backend/repository"
 )
 
 // CounterService defines the interface for counter operations

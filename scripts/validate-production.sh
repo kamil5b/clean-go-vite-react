@@ -37,7 +37,7 @@ echo "  - Frontend assets built: $(du -sh frontend/dist | cut -f1)"
 
 # Test 4: Run unit tests
 echo "✓ Running unit tests..."
-TEST_OUTPUT=$(go test ./internal/... -v 2>&1 | grep -E "^(ok|FAIL)" | head -10)
+TEST_OUTPUT=$(go test ./backend/... -v 2>&1 | grep -E "^(ok|FAIL)" | head -10)
 echo "$TEST_OUTPUT"
 
 # Test 5: Test server startup (timeout after 2 seconds)

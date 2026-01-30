@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/kamil5b/clean-go-vite-react/internal/service"
+	"github.com/kamil5b/clean-go-vite-react/backend/service"
 	"github.com/labstack/echo/v4"
 )
 
