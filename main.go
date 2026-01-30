@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/danhawkins/go-vite-react-example/frontend"
+	"github.com/kamil5b/clean-go-vite-react/frontend"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
