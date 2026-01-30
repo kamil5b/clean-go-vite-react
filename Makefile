@@ -1,4 +1,8 @@
-.PHONY: help dev server worker build test install-deps clean
+MOCKGEN := mockgen
+REPO_INTERFACES_DIR := backend/repository/interfaces
+REPO_MOCK_DIR := backend/repository/mock
+
+.PHONY: help dev server worker build test install-deps clean repository-mocks
 
 help:
 	@echo "Available commands:"
@@ -47,3 +51,14 @@ clean:
 	rm -rf ./bin
 	rm -f coverage.out coverage.html
 	go clean -testcache
+
+repository-mocks:
+	@mkdir -p $(REPO_MOCK_DIR)
+	@for f in $(REPO_INTERFACES_DIR)/*.go; do \
+		base=$$(basename $$f .go); \
+		name=$${base%_interface}; \
+		$(MOCKGEN) \
+			-source=$$f \
+			-destination=$(REPO_MOCK_DIR)/$${name}_mock.go \
+			-package=mock; \
+	done
