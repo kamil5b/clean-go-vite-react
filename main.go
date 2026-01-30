@@ -2,30 +2,34 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-
-	"github.com/kamil5b/clean-go-vite-react/frontend"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"os"
+	"os/exec"
 )
 
 func main() {
-	// Create a new echo server
-	e := echo.New()
+	// This file is deprecated. Use cmd/server/main.go instead.
+	// For backwards compatibility, we'll delegate to the server binary.
 
-	// Add standard middleware
-	e.Use(middleware.Logger())
+	// If running as a worker, delegate to cmd/worker
+	if len(os.Args) > 1 && os.Args[1] == "worker" {
+		cmd := exec.Command("go", append([]string{"run", "./cmd/worker"}, os.Args[2:]...)...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+		if err := cmd.Run(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error running worker: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
 
-	// Setup the frontend handlers to service vite static assets
-	frontend.RegisterHandlers(e)
-
-	// Setup the API Group
-	api := e.Group("/api")
-
-	// Basic APi endpoint
-	api.GET("/message", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{"message": "Hello, from the golang World!"})
-	})
-
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", 3000)))
+	// Default: run server
+	cmd := exec.Command("go", append([]string{"run", "./cmd/server"}, os.Args[1:]...)...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error running server: %v\n", err)
+		os.Exit(1)
+	}
 }
