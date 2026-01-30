@@ -3,17 +3,17 @@ package handler
 import (
 	"net/http"
 
-	"github.com/kamil5b/clean-go-vite-react/backend/service"
+	"github.com/kamil5b/clean-go-vite-react/backend/service/message"
 	"github.com/labstack/echo/v4"
 )
 
 // MessageHandler handles message-related HTTP requests
 type MessageHandler struct {
-	service service.MessageService
+	service message.MessageService
 }
 
 // NewMessageHandler creates a new instance of MessageHandler
-func NewMessageHandler(svc service.MessageService) *MessageHandler {
+func NewMessageHandler(svc message.MessageService) *MessageHandler {
 	return &MessageHandler{
 		service: svc,
 	}

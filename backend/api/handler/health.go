@@ -3,17 +3,17 @@ package handler
 import (
 	"net/http"
 
-	"github.com/kamil5b/clean-go-vite-react/backend/service"
+	"github.com/kamil5b/clean-go-vite-react/backend/service/health"
 	"github.com/labstack/echo/v4"
 )
 
 // HealthHandler handles health check requests
 type HealthHandler struct {
-	service service.HealthService
+	service health.HealthService
 }
 
 // NewHealthHandler creates a new instance of HealthHandler
-func NewHealthHandler(svc service.HealthService) *HealthHandler {
+func NewHealthHandler(svc health.HealthService) *HealthHandler {
 	return &HealthHandler{
 		service: svc,
 	}

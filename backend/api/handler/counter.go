@@ -3,17 +3,17 @@ package handler
 import (
 	"net/http"
 
-	"github.com/kamil5b/clean-go-vite-react/backend/service"
+	"github.com/kamil5b/clean-go-vite-react/backend/service/counter"
 	"github.com/labstack/echo/v4"
 )
 
 // CounterHandler handles counter-related HTTP requests
 type CounterHandler struct {
-	service service.CounterService
+	service counter.CounterService
 }
 
 // NewCounterHandler creates a new instance of CounterHandler
-func NewCounterHandler(svc service.CounterService) *CounterHandler {
+func NewCounterHandler(svc counter.CounterService) *CounterHandler {
 	return &CounterHandler{
 		service: svc,
 	}

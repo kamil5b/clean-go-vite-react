@@ -11,7 +11,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kamil5b/clean-go-vite-react/backend/di"
 	"github.com/kamil5b/clean-go-vite-react/backend/platform"
-	"github.com/kamil5b/clean-go-vite-react/backend/web"
+	web "github.com/kamil5b/clean-go-vite-react/embedder"
+
+	// "github.com/kamil5b/clean-go-vite-react/backend/web"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

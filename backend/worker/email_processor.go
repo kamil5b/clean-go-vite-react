@@ -5,17 +5,17 @@ import (
 	"encoding/json"
 
 	"github.com/hibiken/asynq"
-	"github.com/kamil5b/clean-go-vite-react/backend/service"
+	"github.com/kamil5b/clean-go-vite-react/backend/service/email"
 	"github.com/kamil5b/clean-go-vite-react/backend/task"
 )
 
 // EmailProcessor handles email notification tasks
 type EmailProcessor struct {
-	service service.EmailService
+	service email.EmailService
 }
 
 // NewEmailProcessor creates a new email task processor
-func NewEmailProcessor(svc service.EmailService) *EmailProcessor {
+func NewEmailProcessor(svc email.EmailService) *EmailProcessor {
 	return &EmailProcessor{
 		service: svc,
 	}

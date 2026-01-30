@@ -25,6 +25,7 @@ type ServerConfig struct {
 
 // DatabaseConfig holds database connection configuration
 type DatabaseConfig struct {
+	Type            string
 	DSN             string
 	MaxOpenConns    int
 	MaxIdleConns    int
@@ -60,7 +61,8 @@ func NewConfig() *Config {
 			IdleTimeout:  getEnvDuration("SERVER_IDLE_TIMEOUT", 60*time.Second),
 		},
 		Database: DatabaseConfig{
-			DSN:             getEnv("DATABASE_DSN", ""),
+			DSN:             getEnv("DATABASE_DSN", "dev.db"),
+			Type:            getEnv("DATABASE_TYPE", "sqlite"),
 			MaxOpenConns:    getEnvInt("DATABASE_MAX_OPEN_CONNS", 25),
 			MaxIdleConns:    getEnvInt("DATABASE_MAX_IDLE_CONNS", 5),
 			ConnMaxLifetime: getEnvDuration("DATABASE_CONN_MAX_LIFETIME", 5*time.Minute),

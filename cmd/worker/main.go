@@ -8,7 +8,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kamil5b/clean-go-vite-react/backend/platform"
-	"github.com/kamil5b/clean-go-vite-react/backend/service"
+	"github.com/kamil5b/clean-go-vite-react/backend/service/email"
 	"github.com/kamil5b/clean-go-vite-react/backend/task"
 	"github.com/kamil5b/clean-go-vite-react/backend/worker"
 )
@@ -32,7 +32,7 @@ func main() {
 	mux := platform.NewAsynqMux()
 
 	// Initialize services
-	emailService := service.NewEmailService()
+	emailService := email.NewEmailService()
 
 	// Register task processors
 	emailProcessor := worker.NewEmailProcessor(emailService)
