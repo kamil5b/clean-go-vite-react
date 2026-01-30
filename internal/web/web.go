@@ -4,6 +4,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 )
@@ -39,14 +40,45 @@ func setupDevProxy(e *echo.Echo) {
 
 // setupStaticAssets configures serving of embedded frontend assets
 func setupStaticAssets(e *echo.Echo) {
-	// This would serve embedded assets from the frontend/dist directory
-	// For now, we're keeping it simple - actual implementation depends on
-	// how you want to embed the frontend (using go:embed)
+	// Determine the frontend dist directory
+	distDir := "frontend/dist"
 
-	e.Static("/", "frontend/dist")
+	// Try to find the dist directory in multiple locations
+	possiblePaths := []string{
+		"frontend/dist",
+		"./frontend/dist",
+		"../frontend/dist",
+	}
+
+	// Get the directory of the executable
+	execPath, err := os.Executable()
+	if err == nil {
+		execDir := filepath.Dir(execPath)
+		possiblePaths = append(possiblePaths,
+			filepath.Join(execDir, "frontend/dist"),
+			filepath.Join(execDir, "../frontend/dist"),
+		)
+	}
+
+	// Find which path exists
+	for _, path := range possiblePaths {
+		if info, err := os.Stat(path); err == nil && info.IsDir() {
+			distDir = path
+			break
+		}
+	}
+
+	// Serve static files with proper file serving first
+	e.GET("/assets/*", func(c echo.Context) error {
+		return c.File(filepath.Join(distDir, c.Request().URL.Path[1:]))
+	})
+
+	e.GET("/vite.svg", func(c echo.Context) error {
+		return c.File(filepath.Join(distDir, "vite.svg"))
+	})
 
 	// SPA routing: serve index.html for any unmatched routes
-	e.GET("*", func(c echo.Context) error {
-		return c.File("frontend/dist/index.html")
+	e.GET("/*", func(c echo.Context) error {
+		return c.File(filepath.Join(distDir, "index.html"))
 	})
 }
