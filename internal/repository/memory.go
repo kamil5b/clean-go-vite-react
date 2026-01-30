@@ -177,3 +177,45 @@ func (r *InMemoryUserRepository) Delete(ctx context.Context, id string) error {
 	delete(r.data, id)
 	return nil
 }
+
+// InMemoryCounterRepository is an in-memory implementation of CounterRepository
+type InMemoryCounterRepository struct {
+	mu    sync.RWMutex
+	value int
+}
+
+// NewInMemoryCounterRepository creates a new in-memory counter repository
+func NewInMemoryCounterRepository() *InMemoryCounterRepository {
+	return &InMemoryCounterRepository{
+		value: 0,
+	}
+}
+
+// GetCounter returns the current counter value
+func (r *InMemoryCounterRepository) GetCounter(ctx context.Context) (int, error) {
+	select {
+	case <-ctx.Done():
+		return 0, ctx.Err()
+	default:
+	}
+
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	return r.value, nil
+}
+
+// IncrementCounter increments the counter and returns the new value
+func (r *InMemoryCounterRepository) IncrementCounter(ctx context.Context) (int, error) {
+	select {
+	case <-ctx.Done():
+		return 0, ctx.Err()
+	default:
+	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	r.value++
+	return r.value, nil
+}

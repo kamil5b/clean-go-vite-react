@@ -7,12 +7,17 @@ import (
 )
 
 // SetupRoutes configures all API routes
-func SetupRoutes(e *echo.Echo, messageService service.MessageService) {
+func SetupRoutes(e *echo.Echo, messageService service.MessageService, counterService service.CounterService) {
 	api := e.Group("/api")
 
 	// Message endpoints
 	messageHandler := handler.NewMessageHandler(messageService)
 	api.GET("/message", messageHandler.GetMessage)
+
+	// Counter endpoints
+	counterHandler := handler.NewCounterHandler(counterService)
+	api.GET("/counter", counterHandler.GetCounter)
+	api.POST("/counter", counterHandler.IncrementCounter)
 }
 
 // SetupHealthRoutes configures health check routes

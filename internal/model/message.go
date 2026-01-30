@@ -26,3 +26,8 @@ type Email struct {
 	CreatedAt string `json:"created_at"`
 	SentAt    string `json:"sent_at,omitempty"`
 }
+
+// Counter represents a counter in the system
+type Counter struct {
+	Value int `json:"value"`
+}

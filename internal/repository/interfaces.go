@@ -22,3 +22,9 @@ type UserRepository interface {
 	Update(ctx context.Context, id string, user map[string]interface{}) error
 	Delete(ctx context.Context, id string) error
 }
+
+// CounterRepository defines the interface for counter data access
+type CounterRepository interface {
+	GetCounter(ctx context.Context) (int, error)
+	IncrementCounter(ctx context.Context) (int, error)
+}
