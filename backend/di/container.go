@@ -5,7 +5,10 @@ import (
 	"github.com/kamil5b/clean-go-vite-react/backend/api/handler"
 	"github.com/kamil5b/clean-go-vite-react/backend/platform"
 	"github.com/kamil5b/clean-go-vite-react/backend/repository"
-	"github.com/kamil5b/clean-go-vite-react/backend/service"
+	counterSvc "github.com/kamil5b/clean-go-vite-react/backend/service/counter"
+	emailSvc "github.com/kamil5b/clean-go-vite-react/backend/service/email"
+	healthSvc "github.com/kamil5b/clean-go-vite-react/backend/service/health"
+	messageSvc "github.com/kamil5b/clean-go-vite-react/backend/service/message"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,10 +21,10 @@ type Container struct {
 
 // Services holds all service layer dependencies
 type Services struct {
-	Message service.MessageService
-	Email   service.EmailService
-	Health  service.HealthService
-	Counter service.CounterService
+	Message messageSvc.MessageService
+	Email   emailSvc.EmailService
+	Health  healthSvc.HealthService
+	Counter counterSvc.CounterService
 }
 
 // Handlers holds all HTTP handler dependencies
@@ -41,10 +44,10 @@ func NewContainer(cfg *platform.Config) *Container {
 
 	// Initialize services
 	services := &Services{
-		Message: service.NewMessageService(),
-		Email:   service.NewEmailService(),
-		Health:  service.NewHealthService(),
-		Counter: service.NewCounterService(counterRepo),
+		Message: messageSvc.NewMessageService(),
+		Email:   emailSvc.NewEmailService(),
+		Health:  healthSvc.NewHealthService(),
+		Counter: counterSvc.NewCounterService(counterRepo),
 	}
 
 	// Initialize handlers
