@@ -10,12 +10,13 @@ import (
 func SetupRoutes(e *echo.Echo, messageService service.MessageService) {
 	api := e.Group("/api")
 
-	// Health check endpoint
-	api.GET("/health", func(c echo.Context) error {
-		return c.JSON(200, map[string]string{"status": "ok"})
-	})
-
 	// Message endpoints
 	messageHandler := handler.NewMessageHandler(messageService)
 	api.GET("/message", messageHandler.GetMessage)
+}
+
+// SetupHealthRoutes configures health check routes
+func SetupHealthRoutes(e *echo.Echo, healthHandler *handler.HealthHandler) {
+	api := e.Group("/api")
+	api.GET("/health", healthHandler.Check)
 }

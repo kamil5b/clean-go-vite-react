@@ -1,1 +1,47 @@
-frontend/dist
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.npm
+.yarn
+
+# Go
+bin/
+*.o
+*.a
+*.so
+.DS_Store
+dist/
+tmp/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.env
+.env.local
+
+# Build artifacts
+*.exe
+*.dll
+*.dylib
+
+# Testing
+coverage.txt
+coverage.html
+.coverage
+
+# Dependencies
+vendor/
+
+# Frontend build (if we want to rebuild)
+# frontend/dist is excluded by default but we can be explicit
+frontend/node_modules

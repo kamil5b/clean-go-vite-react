@@ -2,6 +2,7 @@ package di
 
 import (
 	"github.com/kamil5b/clean-go-vite-react/internal/api"
+	"github.com/kamil5b/clean-go-vite-react/internal/api/handler"
 	"github.com/kamil5b/clean-go-vite-react/internal/platform"
 	"github.com/kamil5b/clean-go-vite-react/internal/service"
 	"github.com/labstack/echo/v4"
@@ -17,6 +18,14 @@ type Container struct {
 // Services holds all service layer dependencies
 type Services struct {
 	Message service.MessageService
+	Email   service.EmailService
+	Health  service.HealthService
+}
+
+// Handlers holds all HTTP handler dependencies
+type Handlers struct {
+	Message *handler.MessageHandler
+	Health  *handler.HealthHandler
 }
 
 // NewContainer creates and initializes a new dependency container
@@ -27,10 +36,19 @@ func NewContainer(cfg *platform.Config) *Container {
 	// Initialize services
 	services := &Services{
 		Message: service.NewMessageService(),
+		Email:   service.NewEmailService(),
+		Health:  service.NewHealthService(),
+	}
+
+	// Initialize handlers
+	handlers := &Handlers{
+		Message: handler.NewMessageHandler(services.Message),
+		Health:  handler.NewHealthHandler(services.Health),
 	}
 
 	// Setup routes with dependencies
 	api.SetupRoutes(e, services.Message)
+	e.GET("/api/health", handlers.Health.Check)
 
 	return &Container{
 		Config:   cfg,
