@@ -1,6 +1,6 @@
-module github.com/danhawkins/go-vite-react-example
+module github.com/kamil5b/clean-go-vite-react
 
-go 1.21.0
+go 1.25.6
 
 require (
 	github.com/joho/godotenv v1.5.1

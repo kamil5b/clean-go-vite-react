@@ -1,88 +1,224 @@
-# Go Vite React - Example
+# Go + Vite + React — Clean Full-Stack Example
 
-Embed your vite application into golang, with hot module reloading and live reload for css / tsx changes!
+This repository demonstrates a **clean, detachable integration** between:
 
-I recently tried to embed a vite react-ts application into a golang binary to have a single binary fullstack application. I stumbled across [this great video](https://www.youtube.com/watch?v=w_Rv_3-FF0g) which helped me to get it working. But I was not 100% satisified. One of the most valuable things about using vite, is the dev server and it's hot reloading capability. I really like that if I make a change to context in tsx files, or css files the changes are instantly available on in browser and my state does not automatically refresh.
+* **Go (Echo)** backend API
+* **Vite + React (TypeScript)** frontend
+* Optional **single-binary deployment** via Go `embed`
+* First-class **Vite HMR** during development
 
-## Project Setup
+The key goal is to support a great developer experience **without coupling frontend and backend**, so they can be separated later with minimal changes.
 
-We start with a basic go application usng the Echo framework where we a single APi endpoint to return some text. We also have a vite application created using `yarn create vite` in the frontend folder.
+---
 
-The frontend calls the API endpoint to return the text.
+## Why This Exists
 
-We have a [frontend.go](frontend/frontend.go) file which uses embed and echo to serve the content from the dist folder.
+I originally wanted to embed a Vite + React app into a Go binary to ship a single full-stack executable.
 
-## Run in development mode
+I started from ideas in [this great video](https://www.youtube.com/watch?v=w_Rv_3-FF0g), which shows how to embed frontend assets in Go. While that works, it compromises one of Vite’s biggest strengths: **its dev server and hot module reloading**.
 
-Start using `make dev`, will run vite build in watch mode, as well as the golang server using [air](https://github.com/cosmtrek/air)
+This project keeps **Vite HMR exactly as-is in development**, while still allowing:
 
-### Build a binary
+* embedded assets in production
+* a single deployable binary (optional)
+* clean separation between frontend and backend
 
-Using `make build`, will build frontend assets and then compile the golang binary embeding the frontend/dist folder
+---
 
-### Build a dockerfile
+## Design Principles
 
-Using `docker build -t go-vite .`, will use a multistage dockerfile to build the vite frontend code using a node image, then the golang using a golang image, the put the single binary into an alpine image.
+This repo follows a few non-negotiable rules:
 
-## Hot Reloading
+1. **The backend does not know React exists**
+2. **The frontend does not know how the backend is implemented**
+3. **Frontend integration is optional infrastructure, not core logic**
 
-Instead of serving static assets from go when we running in dev mode, we will setup a proxy from echo that will route the requests to a running vite dev server, unless the path is prefixed with `/api`, this will allow for the HMR and live reloading to happen just as if you were running `vite dev` but it will also allow for api paths to be served.
+If you delete the frontend tomorrow, the backend still builds and runs.
 
-All the changes required to take the initial project and support hot module reloading can be found in the [pull request](https://github.com/danhawkins/go-vite-react-example/pull/1)
+---
 
-### Step 1
+## Project Structure
 
-Change the [package.json](frontend/package.json) to run the standard `vite` instead of the `tsc && vite build --watch`
-
-## Step 2
-
-Update the [frontend.go](frontend/frontend.go) so that when we are running in dev mode we proxy requests to the vite dev server
-
-Import a `.env` file using dotenv which just has `ENV=dev` inside
-
-```golang
-import(
-_ "github.com/joho/godotenv/autoload"
-)
+```txt
+.
+├── cmd/
+│   └── server/
+│       └── main.go          # Application entrypoint (composition only)
+│
+├── internal/
+│   ├── api/                # API routes & handlers
+│   └── web/                # OPTIONAL web hosting layer
+│       ├── web.go          # dev vs prod selection
+│       ├── dev_proxy.go    # dev-only Vite proxy
+│       ├── static.go       # static file serving
+│       └── embedded_assets.go # go:embed (prod only)
+│
+├── frontend/               # Standalone Vite + React app
+│   ├── src/
+│   ├── index.html
+│   ├── vite.config.ts
+│   └── package.json
+│
+├── Makefile
+├── Dockerfile
+├── go.mod
+└── README.md
 ```
 
-If we are running in dev mode, setup the dev proxy
+### Important Distinction
 
-```golang
-func RegisterHandlers(e *echo.Echo) {
-  if os.Getenv("ENV") == "dev" {
-    log.Println("Running in dev mode")
-    setupDevProxy(e)
-    return
-  }
-  // Use the static assets from the dist directory
-  e.FileFS("/", "index.html", distIndexHTML)
-  e.StaticFS("/", distDirFS)
-}
+* `internal/api` → **application logic**
+* `internal/web` → **optional infrastructure**
 
-func setupDevProxy(e *echo.Echo) {
-  url, err := url.Parse("http://localhost:5173")
-  if err != nil {
-    log.Fatal(err)
+The backend does not depend on the frontend to function.
+
+---
+
+## Backend Overview (Go)
+
+* Uses **Echo**
+* Exposes APIs under `/api/*`
+* Contains no frontend-specific logic
+* Can be deployed independently as a pure API service
+
+The backend may optionally:
+
+* proxy frontend requests in development
+* serve embedded static assets in production
+
+These behaviors are **completely removable**.
+
+---
+
+## Frontend Overview (Vite + React)
+
+The `frontend/` directory is a **normal Vite project**, created with:
+
+```bash
+yarn create vite
+```
+
+* Runs independently with `npm run dev`
+* Uses Vite’s dev server and HMR
+* Communicates with backend via HTTP only
+
+### API Proxy (Frontend-Owned)
+
+```ts
+// vite.config.ts
+server: {
+  proxy: {
+    '/api': 'http://localhost:3000'
   }
-  // Setep a proxy to the vite dev server on localhost:5173
-  balancer := middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
-    {
-      URL: url,
-    },
-  })
-  e.Use(middleware.ProxyWithConfig(middleware.ProxyConfig{
-    Balancer: balancer,
-    Skipper: func(c echo.Context) bool {
-      // Skip the proxy if the prefix is /api
-      return len(c.Path()) >= 4 && c.Path()[:4] == "/api"
-    },
-  }))
 }
 ```
 
-## Step 3
+This allows frontend and backend to run on separate ports with no backend awareness of Vite.
 
-Run `make dev` to start the vite dev server and air for the golang server, changes in the frontend app will now be reflected immediatly.
+---
 
-**IMPORTANT: The go build will fail if frontend/dist/index.html is not available, so even if you are running in dev mode, make sure to run `make build` initially to populate the folder**
+## Development Mode
+
+```bash
+make dev
+```
+
+Runs:
+
+* Go API server (optionally with live reload via `air`)
+* Vite dev server with full HMR
+
+Frontend changes (TSX, CSS, state) update instantly **without page reload**.
+
+---
+
+## Production Build (Unified Binary)
+
+```bash
+make build
+```
+
+This will:
+
+1. Build frontend assets into `frontend/dist`
+2. Embed those assets into the Go binary
+3. Produce a single executable
+
+Run with:
+
+```bash
+./server
+```
+
+This mode is optional — the frontend can also be deployed separately.
+
+---
+
+## Docker Build
+
+```bash
+docker build -t go-vite .
+```
+
+Uses a multi-stage Dockerfile:
+
+1. Node image to build frontend assets
+2. Go image to compile backend with embedded assets
+3. Final Alpine image containing a single binary
+
+---
+
+## Hot Module Reloading (How It Works)
+
+### Development
+
+* Frontend runs on Vite dev server (`localhost:5173`)
+* Backend serves `/api/*`
+* Optional proxy forwards non-API requests to Vite
+
+This preserves **native Vite HMR behavior** exactly as intended.
+
+### Production
+
+* Frontend assets are embedded via `go:embed`
+* Backend serves static files directly
+* No Node or Vite runtime required
+
+---
+
+## Detaching Frontend and Backend Later
+
+This repo is intentionally structured so detaching is trivial.
+
+When ready:
+
+1. Remove `internal/web`
+2. Remove the web registration call in `main.go`
+3. Enable CORS
+4. Deploy frontend to a CDN
+5. Deploy backend as an API service
+
+No API handlers change.
+No business logic changes.
+
+See **`DETACH.md`** for a step-by-step guide.
+
+---
+
+## Notes & Gotchas
+
+* Even in dev mode, the Go build requires embedded assets to exist.
+  Run `make build` once initially to populate `frontend/dist`.
+* All API routes should live under `/api/*`.
+* Avoid importing frontend artifacts into backend code.
+
+---
+
+## Credits
+
+Original inspiration from:
+
+* [Embedding Vite into Go (YouTube)](https://www.youtube.com/watch?v=w_Rv_3-FF0g)
+* Original example by @danhawkins
+
+This fork focuses on **clean boundaries and long-term maintainability**.
