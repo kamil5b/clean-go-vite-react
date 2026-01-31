@@ -1,10 +1,17 @@
-CommonIDResponse:
-  type: object
-  required:
-    - value
-  properties:
-    value:
-      type: string
-      format: uuid
-      description: The ID value
-      example: "550e8400-e29b-41d4-a716-446655440000"
+openapi: 3.0.3
+info:
+    title: Common Response Schemas
+    version: 1.0.0
+paths: {}
+components:
+    schemas:
+        CommonIDResponse:
+            type: object
+            required:
+                - value
+            properties:
+                value:
+                    type: string
+                    format: uuid
+                    description: The ID value
+                    example: "550e8400-e29b-41d4-a716-446655440000"

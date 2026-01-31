@@ -1,20 +1,28 @@
-SaveEmailRequest:
-  type: object
-  required:
-    - to
-    - subject
-    - body
-  properties:
-    to:
-      type: string
-      format: email
-      description: Email recipient address
-      example: user@example.com
-    subject:
-      type: string
-      description: Email subject line
-      example: Welcome to our service
-    body:
-      type: string
-      description: Email body content
-      example: Hello, welcome to our platform!
+openapi: 3.0.3
+info:
+    title: Email API
+    version: 1.0.0
+paths: {}
+components:
+    schemas:
+        SaveEmailRequest:
+            type: object
+            description: Request to save an email record
+            required:
+                - to
+                - subject
+                - body
+            properties:
+                to:
+                    type: string
+                    format: email
+                    description: Recipient's email address
+                    example: recipient@example.com
+                subject:
+                    type: string
+                    description: Email subject line
+                    example: Welcome to our service
+                body:
+                    type: string
+                    description: Email body content
+                    example: This is the email body content

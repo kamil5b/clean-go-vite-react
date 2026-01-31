@@ -1,36 +1,46 @@
-RegisterUserRequest:
-  type: object
-  required:
-    - email
-    - password
-    - name
-  properties:
-    email:
-      type: string
-      format: email
-      description: User email address
-      example: user@example.com
-    password:
-      type: string
-      description: User password
-      example: password123
-    name:
-      type: string
-      description: User full name
-      example: John Doe
-
-LoginRequest:
-  type: object
-  required:
-    - email
-    - password
-  properties:
-    email:
-      type: string
-      format: email
-      description: User email address
-      example: user@example.com
-    password:
-      type: string
-      description: User password
-      example: password123
+openapi: 3.0.3
+info:
+    title: User API
+    version: 1.0.0
+paths: {}
+components:
+    schemas:
+        RegisterUserRequest:
+            type: object
+            description: Request to register a new user
+            required:
+                - email
+                - password
+                - name
+            properties:
+                email:
+                    type: string
+                    format: email
+                    description: User's email address
+                    example: user@example.com
+                password:
+                    type: string
+                    format: password
+                    description: User's password
+                    example: SecurePassword123!
+                name:
+                    type: string
+                    description: User's full name
+                    example: John Doe
+        LoginRequest:
+            type: object
+            description: Request to login a user
+            required:
+                - email
+                - password
+            properties:
+                email:
+                    type: string
+                    format: email
+                    description: User's email address
+                    example: user@example.com
+                password:
+                    type: string
+                    format: password
+                    description: User's password
+                    example: SecurePassword123!
