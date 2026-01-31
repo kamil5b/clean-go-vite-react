@@ -8,6 +8,7 @@ import {
     FieldLabel,
     FieldContent,
 } from "@/components/ui/field";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export function RegisterPage() {
     const {
@@ -74,17 +75,14 @@ export function RegisterPage() {
                         <Field>
                             <FieldLabel htmlFor="password">Password</FieldLabel>
                             <FieldContent>
-                                <input
+                                <PasswordInput
                                     id="password"
-                                    type="password"
                                     value={password}
                                     onChange={(e) =>
                                         setPassword(e.target.value)
                                     }
                                     required
                                     disabled={loading}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                                    placeholder="••••••••"
                                 />
                             </FieldContent>
                         </Field>
@@ -94,17 +92,14 @@ export function RegisterPage() {
                                 Confirm Password
                             </FieldLabel>
                             <FieldContent>
-                                <input
+                                <PasswordInput
                                     id="confirm-password"
-                                    type="password"
                                     value={confirmPassword}
                                     onChange={(e) =>
                                         setConfirmPassword(e.target.value)
                                     }
                                     required
                                     disabled={loading}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                                    placeholder="••••••••"
                                 />
                             </FieldContent>
                         </Field>
