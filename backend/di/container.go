@@ -6,6 +6,7 @@ import (
 	"github.com/kamil5b/clean-go-vite-react/backend/platform"
 
 	counterRepo "github.com/kamil5b/clean-go-vite-react/backend/repository/implementations/counter"
+	messageRepo "github.com/kamil5b/clean-go-vite-react/backend/repository/implementations/message"
 
 	counterSvc "github.com/kamil5b/clean-go-vite-react/backend/service/counter"
 	emailSvc "github.com/kamil5b/clean-go-vite-react/backend/service/email"
@@ -50,9 +51,10 @@ func NewContainer(cfg *platform.Config) *Container {
 	}
 
 	counterRepository, _ := counterRepo.NewGORMCounterRepository(db)
-	// Initialize services
+	messageRepository, _ := messageRepo.NewGORMMessageRepository(db)
+
 	services := &Services{
-		Message: messageSvc.NewMessageService(),
+		Message: messageSvc.NewMessageService(messageRepository),
 		Email:   emailSvc.NewEmailService(),
 		Health:  healthSvc.NewHealthService(),
 		Counter: counterSvc.NewCounterService(counterRepository),

@@ -28,7 +28,5 @@ func (h *MessageHandler) GetMessage(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": message,
-	})
+	return c.JSON(http.StatusOK, message)
 }

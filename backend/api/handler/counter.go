@@ -28,9 +28,7 @@ func (h *CounterHandler) GetCounter(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]int{
-		"value": value,
-	})
+	return c.JSON(http.StatusOK, value)
 }
 
 // IncrementCounter handles POST /api/counter requests
@@ -42,7 +40,5 @@ func (h *CounterHandler) IncrementCounter(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]int{
-		"value": value,
-	})
+	return c.JSON(http.StatusOK, value)
 }

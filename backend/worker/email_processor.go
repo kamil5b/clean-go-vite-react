@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/hibiken/asynq"
+	"github.com/kamil5b/clean-go-vite-react/backend/model/request"
 	"github.com/kamil5b/clean-go-vite-react/backend/service/email"
 	"github.com/kamil5b/clean-go-vite-react/backend/task"
 )
@@ -27,6 +28,10 @@ func (p *EmailProcessor) ProcessTask(ctx context.Context, t *asynq.Task) error {
 	if err := json.Unmarshal(t.Payload(), &payload); err != nil {
 		return asynq.SkipRetry
 	}
-
-	return p.service.SendEmail(ctx, payload.To, payload.Subject, payload.Body)
+	_, err := p.service.SendEmail(ctx, &request.SaveEmailRequest{
+		To:      payload.To,
+		Subject: payload.Subject,
+		Body:    payload.Body,
+	})
+	return err
 }
