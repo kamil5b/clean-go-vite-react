@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	entity "github.com/kamil5b/clean-go-vite-react/backend/model/entity"
 )
 
 // MockUserRepository is a mock of UserRepository interface.
@@ -35,10 +36,10 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockUserRepository) Create(ctx context.Context, user map[string]interface{}) (string, error) {
+func (m *MockUserRepository) Create(ctx context.Context, user entity.UserEntity) (*string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, user)
-	ret0, _ := ret[0].(string)
+	ret0, _ := ret[0].(*string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -64,10 +65,10 @@ func (mr *MockUserRepositoryMockRecorder) Delete(ctx, id interface{}) *gomock.Ca
 }
 
 // FindByID mocks base method.
-func (m *MockUserRepository) FindByID(ctx context.Context, id string) (map[string]interface{}, error) {
+func (m *MockUserRepository) FindByID(ctx context.Context, id string) (*entity.UserEntity, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", ctx, id)
-	ret0, _ := ret[0].(map[string]interface{})
+	ret0, _ := ret[0].(*entity.UserEntity)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -79,7 +80,7 @@ func (mr *MockUserRepositoryMockRecorder) FindByID(ctx, id interface{}) *gomock.
 }
 
 // Update mocks base method.
-func (m *MockUserRepository) Update(ctx context.Context, id string, user map[string]interface{}) error {
+func (m *MockUserRepository) Update(ctx context.Context, id string, user entity.UserEntity) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, id, user)
 	ret0, _ := ret[0].(error)

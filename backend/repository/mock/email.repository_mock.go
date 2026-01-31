@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	entity "github.com/kamil5b/clean-go-vite-react/backend/model/entity"
 )
 
 // MockEmailRepository is a mock of EmailRepository interface.
@@ -35,10 +36,10 @@ func (m *MockEmailRepository) EXPECT() *MockEmailRepositoryMockRecorder {
 }
 
 // GetEmailLog mocks base method.
-func (m *MockEmailRepository) GetEmailLog(ctx context.Context, id string) (map[string]interface{}, error) {
+func (m *MockEmailRepository) GetEmailLog(ctx context.Context, id string) (*entity.EmailLogEntity, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetEmailLog", ctx, id)
-	ret0, _ := ret[0].(map[string]interface{})
+	ret0, _ := ret[0].(*entity.EmailLogEntity)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -11,7 +11,7 @@ func (r *SQLiteCounterRepository) GetCounter(ctx context.Context) (int, error) {
 	}
 
 	var counter CounterModel
-	if err := r.db.WithContext(ctx).First(&counter, 1).Error; err != nil {
+	if err := r.db.WithContext(ctx).First(&counter).Error; err != nil {
 		return 0, err
 	}
 

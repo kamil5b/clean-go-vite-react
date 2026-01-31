@@ -53,10 +53,12 @@ clean:
 	go clean -testcache
 
 repository-mocks:
+	@rm -rf $(REPO_MOCK_DIR)
 	@mkdir -p $(REPO_MOCK_DIR)
 	@for f in $(REPO_INTERFACES_DIR)/*.go; do \
 		base=$$(basename $$f .go); \
 		name=$${base%_interface}; \
+		echo "Generating mock for interface: $$name"; \
 		$(MOCKGEN) \
 			-source=$$f \
 			-destination=$(REPO_MOCK_DIR)/$${name}_mock.go \

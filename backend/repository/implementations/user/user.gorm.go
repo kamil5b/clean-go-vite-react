@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/kamil5b/clean-go-vite-react/backend/model/entity"
 	"gorm.io/gorm"
 )
 
@@ -10,16 +11,7 @@ type SQLiteUserRepository struct {
 }
 
 // UserModel represents the users table schema
-type UserModel struct {
-	ID    uint `gorm:"primaryKey"`
-	Name  string
-	Email string
-}
-
-// TableName specifies the table name for UserModel
-func (UserModel) TableName() string {
-	return "users"
-}
+type UserModel = entity.UserEntity
 
 // NewSQLiteUserRepository creates a new SQLite user repository
 func NewSQLiteUserRepository(db *gorm.DB) (*SQLiteUserRepository, error) {

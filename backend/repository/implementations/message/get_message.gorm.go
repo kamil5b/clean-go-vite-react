@@ -6,7 +6,7 @@ import (
 )
 
 // GetMessage returns a stored message from SQLite
-func (r *SQLiteMessageRepository) GetMessage(ctx context.Context) (string, error) {
+func (r *SQLiteMessageRepository) GetMessage(ctx context.Context, key string) (string, error) {
 	select {
 	case <-ctx.Done():
 		return "", ctx.Err()
@@ -14,7 +14,7 @@ func (r *SQLiteMessageRepository) GetMessage(ctx context.Context) (string, error
 	}
 
 	var message MessageModel
-	if err := r.db.WithContext(ctx).Where("key = ?", "default").First(&message).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("key = ?", key).First(&message).Error; err != nil {
 		return "", fmt.Errorf("message not found")
 	}
 

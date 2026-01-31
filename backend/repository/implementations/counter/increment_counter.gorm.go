@@ -19,7 +19,7 @@ func (r *SQLiteCounterRepository) IncrementCounter(ctx context.Context) (int, er
 	// Use a transaction to atomically read and update the counter
 	if err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		// Read current value
-		if err := tx.First(&counter, 1).Error; err != nil {
+		if err := tx.First(&counter).Error; err != nil {
 			return err
 		}
 

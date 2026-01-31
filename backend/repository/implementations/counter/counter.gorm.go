@@ -1,6 +1,8 @@
 package counter
 
 import (
+	"github.com/google/uuid"
+	"github.com/kamil5b/clean-go-vite-react/backend/model/entity"
 	"gorm.io/gorm"
 )
 
@@ -9,11 +11,7 @@ type SQLiteCounterRepository struct {
 	db *gorm.DB
 }
 
-// CounterModel represents the counter table schema
-type CounterModel struct {
-	ID    uint `gorm:"primaryKey"`
-	Value int
-}
+type CounterModel entity.CounterEntity
 
 // TableName specifies the table name for CounterModel
 func (CounterModel) TableName() string {
@@ -31,7 +29,7 @@ func NewSQLiteCounterRepository(db *gorm.DB) (*SQLiteCounterRepository, error) {
 	var count int64
 	db.Model(&CounterModel{}).Count(&count)
 	if count == 0 {
-		db.Create(&CounterModel{ID: 1, Value: 0})
+		db.Create(&CounterModel{ID: uuid.New(), Value: 0})
 	}
 
 	return &SQLiteCounterRepository{

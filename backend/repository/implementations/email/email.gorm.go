@@ -1,6 +1,7 @@
 package email
 
 import (
+	"github.com/kamil5b/clean-go-vite-react/backend/model/entity"
 	"gorm.io/gorm"
 )
 
@@ -10,13 +11,7 @@ type SQLiteEmailRepository struct {
 }
 
 // EmailLogModel represents the email_logs table schema
-type EmailLogModel struct {
-	ID      uint `gorm:"primaryKey"`
-	To      string
-	Subject string
-	Body    string
-	Status  string
-}
+type EmailLogModel entity.EmailLogEntity
 
 // TableName specifies the table name for EmailLogModel
 func (EmailLogModel) TableName() string {

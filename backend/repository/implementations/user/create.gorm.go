@@ -2,25 +2,22 @@ package user
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/google/uuid"
+	"github.com/kamil5b/clean-go-vite-react/backend/model/entity"
 )
 
 // Create creates a new user in SQLite
-func (r *SQLiteUserRepository) Create(ctx context.Context, user map[string]interface{}) (string, error) {
+func (r *SQLiteUserRepository) Create(ctx context.Context, user entity.UserEntity) (*uuid.UUID, error) {
 	select {
 	case <-ctx.Done():
-		return "", ctx.Err()
+		return nil, ctx.Err()
 	default:
 	}
 
-	userModel := UserModel{
-		Name:  user["name"].(string),
-		Email: user["email"].(string),
+	if err := r.db.WithContext(ctx).Create(&user).Error; err != nil {
+		return nil, err
 	}
 
-	if err := r.db.WithContext(ctx).Create(&userModel).Error; err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("user_%d", userModel.ID), nil
+	return &user.ID, nil
 }

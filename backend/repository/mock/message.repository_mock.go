@@ -35,16 +35,16 @@ func (m *MockMessageRepository) EXPECT() *MockMessageRepositoryMockRecorder {
 }
 
 // GetMessage mocks base method.
-func (m *MockMessageRepository) GetMessage(ctx context.Context) (string, error) {
+func (m *MockMessageRepository) GetMessage(ctx context.Context, key string) (*string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMessage", ctx)
-	ret0, _ := ret[0].(string)
+	ret := m.ctrl.Call(m, "GetMessage", ctx, key)
+	ret0, _ := ret[0].(*string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetMessage indicates an expected call of GetMessage.
-func (mr *MockMessageRepositoryMockRecorder) GetMessage(ctx interface{}) *gomock.Call {
+func (mr *MockMessageRepositoryMockRecorder) GetMessage(ctx, key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMessage", reflect.TypeOf((*MockMessageRepository)(nil).GetMessage), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMessage", reflect.TypeOf((*MockMessageRepository)(nil).GetMessage), ctx, key)
 }
