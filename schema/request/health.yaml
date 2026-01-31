@@ -1,6 +1,0 @@
-components:
-  schemas:
-    HealthCheckRequest:
-      type: object
-      description: Health check request
-      properties: {}

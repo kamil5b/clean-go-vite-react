@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/google/uuid"
 	entity "github.com/kamil5b/clean-go-vite-react/backend/model/entity"
 )
 
@@ -36,10 +37,10 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockUserRepository) Create(ctx context.Context, user entity.UserEntity) (*string, error) {
+func (m *MockUserRepository) Create(ctx context.Context, user entity.UserEntity) (*uuid.UUID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, user)
-	ret0, _ := ret[0].(*string)
+	ret0, _ := ret[0].(*uuid.UUID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -51,7 +52,7 @@ func (mr *MockUserRepositoryMockRecorder) Create(ctx, user interface{}) *gomock.
 }
 
 // Delete mocks base method.
-func (m *MockUserRepository) Delete(ctx context.Context, id string) error {
+func (m *MockUserRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -64,8 +65,23 @@ func (mr *MockUserRepositoryMockRecorder) Delete(ctx, id interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUserRepository)(nil).Delete), ctx, id)
 }
 
+// FindByEmail mocks base method.
+func (m *MockUserRepository) FindByEmail(ctx context.Context, email string) (*entity.UserEntity, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByEmail", ctx, email)
+	ret0, _ := ret[0].(*entity.UserEntity)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByEmail indicates an expected call of FindByEmail.
+func (mr *MockUserRepositoryMockRecorder) FindByEmail(ctx, email interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockUserRepository)(nil).FindByEmail), ctx, email)
+}
+
 // FindByID mocks base method.
-func (m *MockUserRepository) FindByID(ctx context.Context, id string) (*entity.UserEntity, error) {
+func (m *MockUserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.UserEntity, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", ctx, id)
 	ret0, _ := ret[0].(*entity.UserEntity)
@@ -80,7 +96,7 @@ func (mr *MockUserRepositoryMockRecorder) FindByID(ctx, id interface{}) *gomock.
 }
 
 // Update mocks base method.
-func (m *MockUserRepository) Update(ctx context.Context, id string, user entity.UserEntity) error {
+func (m *MockUserRepository) Update(ctx context.Context, id uuid.UUID, user entity.UserEntity) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, id, user)
 	ret0, _ := ret[0].(error)

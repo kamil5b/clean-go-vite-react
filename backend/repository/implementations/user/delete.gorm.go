@@ -2,23 +2,19 @@ package user
 
 import (
 	"context"
-	"strconv"
+
+	"github.com/google/uuid"
 )
 
 // Delete deletes a user in GORM
-func (r *GORMUserRepository) Delete(ctx context.Context, id string) error {
+func (r *GORMUserRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
 	default:
 	}
 
-	numID, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
-		return err
-	}
-
-	if err := r.db.WithContext(ctx).Delete(&UserModel{}, uint(numID)).Error; err != nil {
+	if err := r.db.WithContext(ctx).Delete(&UserModel{}, id).Error; err != nil {
 		return err
 	}
 

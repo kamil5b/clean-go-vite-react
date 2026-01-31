@@ -1,9 +1,0 @@
-GetCounterRequest:
-  type: object
-  description: Request to get the current counter value
-  properties: {}
-
-IncrementCounterRequest:
-  type: object
-  description: Request to increment the counter
-  properties: {}
