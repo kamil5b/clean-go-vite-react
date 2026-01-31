@@ -16,7 +16,6 @@ func TestSendEmail(t *testing.T) {
 		{
 			name: "should send email successfully",
 			request: &request.SaveEmailRequest{
-				ID:      "1",
 				To:      "test@example.com",
 				Subject: "Test Subject",
 				Body:    "Test body content",
@@ -26,7 +25,6 @@ func TestSendEmail(t *testing.T) {
 		{
 			name: "should handle multiple recipients",
 			request: &request.SaveEmailRequest{
-				ID:      "2",
 				To:      "user1@example.com",
 				Subject: "Multi recipient",
 				Body:    "Body",
@@ -36,7 +34,6 @@ func TestSendEmail(t *testing.T) {
 		{
 			name: "should handle empty body",
 			request: &request.SaveEmailRequest{
-				ID:      "3",
 				To:      "test@example.com",
 				Subject: "Subject",
 				Body:    "",
@@ -46,7 +43,6 @@ func TestSendEmail(t *testing.T) {
 		{
 			name: "should handle special characters in subject",
 			request: &request.SaveEmailRequest{
-				ID:      "4",
 				To:      "test@example.com",
 				Subject: "Subject with special chars: !@#$%",
 				Body:    "Content",
@@ -56,7 +52,6 @@ func TestSendEmail(t *testing.T) {
 		{
 			name: "should handle long email content",
 			request: &request.SaveEmailRequest{
-				ID:      "5",
 				To:      "test@example.com",
 				Subject: "Long content",
 				Body:    "This is a very long email body with lots of content that should still be handled correctly without any issues or errors",
@@ -115,7 +110,6 @@ func TestSendEmailWithContext(t *testing.T) {
 				return context.Background()
 			},
 			request: &request.SaveEmailRequest{
-				ID:      "1",
 				To:      "test@example.com",
 				Subject: "Subject",
 				Body:    "Body",
@@ -130,7 +124,6 @@ func TestSendEmailWithContext(t *testing.T) {
 				return ctx
 			},
 			request: &request.SaveEmailRequest{
-				ID:      "2",
 				To:      "test@example.com",
 				Subject: "Subject",
 				Body:    "Body",
@@ -145,7 +138,6 @@ func TestSendEmailWithContext(t *testing.T) {
 				return ctx
 			},
 			request: &request.SaveEmailRequest{
-				ID:      "3",
 				To:      "test@example.com",
 				Subject: "Subject",
 				Body:    "Body",
