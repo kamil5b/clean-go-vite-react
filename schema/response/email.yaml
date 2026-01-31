@@ -1,0 +1,41 @@
+GetEmailLog:
+  type: object
+  required:
+    - id
+    - to
+    - subject
+    - body
+    - status
+    - created_at
+  properties:
+    id:
+      type: string
+      format: uuid
+      description: Unique identifier for the email log
+      example: 550e8400-e29b-41d4-a716-446655440000
+    to:
+      type: string
+      format: email
+      description: Recipient email address
+      example: user@example.com
+    subject:
+      type: string
+      description: Email subject line
+      example: Welcome to our service
+    body:
+      type: string
+      description: Email body content
+      example: Thank you for signing up!
+    status:
+      type: string
+      enum:
+        - pending
+        - sent
+        - failed
+      description: Current status of the email
+      example: sent
+    created_at:
+      type: string
+      format: date-time
+      description: Timestamp when the email was created
+      example: 2024-01-15T10:30:00Z

@@ -1,0 +1,4 @@
+GetMessage:
+  type: object
+  description: Request for getting a message
+  properties: {}

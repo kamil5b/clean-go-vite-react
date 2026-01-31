@@ -1,0 +1,9 @@
+GetCounter:
+  type: object
+  required:
+    - value
+  properties:
+    value:
+      type: integer
+      description: The current counter value
+      example: 42

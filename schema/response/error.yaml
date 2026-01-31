@@ -1,0 +1,8 @@
+type: object
+required:
+  - error
+properties:
+  error:
+    type: string
+    description: Error message describing what went wrong
+    example: Internal server error

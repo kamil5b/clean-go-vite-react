@@ -1,0 +1,36 @@
+RegisterUserRequest:
+  type: object
+  required:
+    - email
+    - password
+    - name
+  properties:
+    email:
+      type: string
+      format: email
+      description: User email address
+      example: user@example.com
+    password:
+      type: string
+      description: User password
+      example: password123
+    name:
+      type: string
+      description: User full name
+      example: John Doe
+
+LoginRequest:
+  type: object
+  required:
+    - email
+    - password
+  properties:
+    email:
+      type: string
+      format: email
+      description: User email address
+      example: user@example.com
+    password:
+      type: string
+      description: User password
+      example: password123

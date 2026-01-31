@@ -1,0 +1,9 @@
+GetMessage:
+  type: object
+  required:
+    - content
+  properties:
+    content:
+      type: string
+      description: The message content
+      example: 'Hello, World!'
