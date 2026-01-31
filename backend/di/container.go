@@ -4,11 +4,14 @@ import (
 	"github.com/kamil5b/clean-go-vite-react/backend/api"
 	"github.com/kamil5b/clean-go-vite-react/backend/api/handler"
 	"github.com/kamil5b/clean-go-vite-react/backend/platform"
-	"github.com/kamil5b/clean-go-vite-react/backend/repository"
+
+	counterRepo "github.com/kamil5b/clean-go-vite-react/backend/repository/implementations/counter"
+
 	counterSvc "github.com/kamil5b/clean-go-vite-react/backend/service/counter"
 	emailSvc "github.com/kamil5b/clean-go-vite-react/backend/service/email"
 	healthSvc "github.com/kamil5b/clean-go-vite-react/backend/service/health"
 	messageSvc "github.com/kamil5b/clean-go-vite-react/backend/service/message"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -40,14 +43,19 @@ func NewContainer(cfg *platform.Config) *Container {
 	e := echo.New()
 
 	// Initialize repositories
-	counterRepo := repository.NewInMemoryCounterRepository()
+	db := cfg.Database.Gorm
+	if db == nil {
+		db = platform.InitializeDatabase(cfg)
+		cfg.Database.Gorm = db
+	}
 
+	counterRepository, _ := counterRepo.NewGORMCounterRepository(db)
 	// Initialize services
 	services := &Services{
 		Message: messageSvc.NewMessageService(),
 		Email:   emailSvc.NewEmailService(),
 		Health:  healthSvc.NewHealthService(),
-		Counter: counterSvc.NewCounterService(counterRepo),
+		Counter: counterSvc.NewCounterService(counterRepository),
 	}
 
 	// Initialize handlers

@@ -13,8 +13,8 @@ type SQLiteUserRepository struct {
 // UserModel represents the users table schema
 type UserModel = entity.UserEntity
 
-// NewSQLiteUserRepository creates a new SQLite user repository
-func NewSQLiteUserRepository(db *gorm.DB) (*SQLiteUserRepository, error) {
+// NewGORMUserRepository creates a new SQLite user repository
+func NewGORMUserRepository(db *gorm.DB) (*SQLiteUserRepository, error) {
 	// Auto-migrate the schema
 	if err := db.AutoMigrate(&UserModel{}); err != nil {
 		return nil, err

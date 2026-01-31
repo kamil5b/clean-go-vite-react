@@ -18,8 +18,8 @@ func (EmailLogModel) TableName() string {
 	return "email_logs"
 }
 
-// NewSQLiteEmailRepository creates a new SQLite email repository
-func NewSQLiteEmailRepository(db *gorm.DB) (*SQLiteEmailRepository, error) {
+// NewGORMEmailRepository creates a new SQLite email repository
+func NewGORMEmailRepository(db *gorm.DB) (*SQLiteEmailRepository, error) {
 	// Auto-migrate the schema
 	if err := db.AutoMigrate(&EmailLogModel{}); err != nil {
 		return nil, err

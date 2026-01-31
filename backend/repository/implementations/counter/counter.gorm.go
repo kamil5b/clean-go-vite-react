@@ -18,8 +18,8 @@ func (CounterModel) TableName() string {
 	return "counters"
 }
 
-// NewSQLiteCounterRepository creates a new SQLite counter repository
-func NewSQLiteCounterRepository(db *gorm.DB) (*SQLiteCounterRepository, error) {
+// NewGORMCounterRepository creates a new SQLite counter repository
+func NewGORMCounterRepository(db *gorm.DB) (*SQLiteCounterRepository, error) {
 	// Auto-migrate the schema
 	if err := db.AutoMigrate(&CounterModel{}); err != nil {
 		return nil, err

@@ -4,6 +4,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // Config holds all application configuration
@@ -25,6 +27,7 @@ type ServerConfig struct {
 
 // DatabaseConfig holds database connection configuration
 type DatabaseConfig struct {
+	Gorm            *gorm.DB
 	Type            string
 	DSN             string
 	MaxOpenConns    int

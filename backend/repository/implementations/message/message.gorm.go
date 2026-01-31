@@ -14,8 +14,8 @@ type SQLiteMessageRepository struct {
 // MessageModel represents the message table schema
 type MessageModel = entity.MessageEntity
 
-// NewSQLiteMessageRepository creates a new SQLite message repository
-func NewSQLiteMessageRepository(db *gorm.DB) (*SQLiteMessageRepository, error) {
+// NewGORMMessageRepository creates a new SQLite message repository
+func NewGORMMessageRepository(db *gorm.DB) (*SQLiteMessageRepository, error) {
 	// Auto-migrate the schema
 	if err := db.AutoMigrate(&MessageModel{}); err != nil {
 		return nil, err
