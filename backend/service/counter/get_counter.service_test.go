@@ -96,8 +96,12 @@ func TestGetCounter(t *testing.T) {
 				}
 			}
 
-			if result != tt.expectedValue {
-				t.Errorf("expected value %d, got %d", tt.expectedValue, result)
+			if !tt.expectedError {
+				if result == nil {
+					t.Errorf("expected result, got nil")
+				} else if result.Value != tt.expectedValue {
+					t.Errorf("expected value %d, got %d", tt.expectedValue, result.Value)
+				}
 			}
 		})
 	}
@@ -172,8 +176,12 @@ func TestGetCounterWithContext(t *testing.T) {
 				}
 			}
 
-			if result != tt.expectedValue {
-				t.Errorf("expected value %d, got %d", tt.expectedValue, result)
+			if !tt.expectedError {
+				if result == nil {
+					t.Errorf("expected result, got nil")
+				} else if result.Value != tt.expectedValue {
+					t.Errorf("expected value %d, got %d", tt.expectedValue, result.Value)
+				}
 			}
 		})
 	}

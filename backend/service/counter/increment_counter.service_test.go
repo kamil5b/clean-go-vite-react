@@ -102,10 +102,11 @@ func TestIncrementCounter(t *testing.T) {
 				if err != nil {
 					t.Errorf("unexpected error: %v", err)
 				}
-			}
-
-			if result != tt.expectedValue {
-				t.Errorf("expected value %d, got %d", tt.expectedValue, result)
+				if result == nil {
+					t.Errorf("expected non-nil result, got nil")
+				} else if result.Value != tt.expectedValue {
+					t.Errorf("expected value %d, got %d", tt.expectedValue, result.Value)
+				}
 			}
 		})
 	}
@@ -178,10 +179,11 @@ func TestIncrementCounterWithContext(t *testing.T) {
 				if err != nil {
 					t.Errorf("unexpected error: %v", err)
 				}
-			}
-
-			if result != tt.expectedValue {
-				t.Errorf("expected value %d, got %d", tt.expectedValue, result)
+				if result == nil {
+					t.Errorf("expected non-nil result, got nil")
+				} else if result.Value != tt.expectedValue {
+					t.Errorf("expected value %d, got %d", tt.expectedValue, result.Value)
+				}
 			}
 		})
 	}
@@ -234,8 +236,10 @@ func TestIncrementCounterSequential(t *testing.T) {
 				if err != nil {
 					t.Errorf("call %d: unexpected error: %v", i+1, err)
 				}
-				if result != tt.expectedCalls[i] {
-					t.Errorf("call %d: expected %d, got %d", i+1, tt.expectedCalls[i], result)
+				if result == nil {
+					t.Errorf("call %d: expected non-nil result, got nil", i+1)
+				} else if result.Value != tt.expectedCalls[i] {
+					t.Errorf("call %d: expected %d, got %d", i+1, tt.expectedCalls[i], result.Value)
 				}
 			}
 		})

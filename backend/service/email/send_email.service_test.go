@@ -3,49 +3,64 @@ package email
 import (
 	"context"
 	"testing"
+
+	"github.com/kamil5b/clean-go-vite-react/backend/model/request"
 )
 
 func TestSendEmail(t *testing.T) {
 	tests := []struct {
 		name          string
-		to            string
-		subject       string
-		body          string
+		request       *request.SaveEmailRequest
 		expectedError bool
 	}{
 		{
-			name:          "should send email successfully",
-			to:            "test@example.com",
-			subject:       "Test Subject",
-			body:          "Test body content",
+			name: "should send email successfully",
+			request: &request.SaveEmailRequest{
+				ID:      "1",
+				To:      "test@example.com",
+				Subject: "Test Subject",
+				Body:    "Test body content",
+			},
 			expectedError: false,
 		},
 		{
-			name:          "should handle multiple recipients",
-			to:            "user1@example.com",
-			subject:       "Multi recipient",
-			body:          "Body",
+			name: "should handle multiple recipients",
+			request: &request.SaveEmailRequest{
+				ID:      "2",
+				To:      "user1@example.com",
+				Subject: "Multi recipient",
+				Body:    "Body",
+			},
 			expectedError: false,
 		},
 		{
-			name:          "should handle empty body",
-			to:            "test@example.com",
-			subject:       "Subject",
-			body:          "",
+			name: "should handle empty body",
+			request: &request.SaveEmailRequest{
+				ID:      "3",
+				To:      "test@example.com",
+				Subject: "Subject",
+				Body:    "",
+			},
 			expectedError: false,
 		},
 		{
-			name:          "should handle special characters in subject",
-			to:            "test@example.com",
-			subject:       "Subject with special chars: !@#$%",
-			body:          "Content",
+			name: "should handle special characters in subject",
+			request: &request.SaveEmailRequest{
+				ID:      "4",
+				To:      "test@example.com",
+				Subject: "Subject with special chars: !@#$%",
+				Body:    "Content",
+			},
 			expectedError: false,
 		},
 		{
-			name:          "should handle long email content",
-			to:            "test@example.com",
-			subject:       "Long content",
-			body:          "This is a very long email body with lots of content that should still be handled correctly without any issues or errors",
+			name: "should handle long email content",
+			request: &request.SaveEmailRequest{
+				ID:      "5",
+				To:      "test@example.com",
+				Subject: "Long content",
+				Body:    "This is a very long email body with lots of content that should still be handled correctly without any issues or errors",
+			},
 			expectedError: false,
 		},
 	}
@@ -53,7 +68,7 @@ func TestSendEmail(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := NewEmailService()
-			err := svc.SendEmail(context.Background(), tt.to, tt.subject, tt.body)
+			result, err := svc.SendEmail(context.Background(), tt.request)
 
 			if tt.expectedError {
 				if err == nil {
@@ -64,6 +79,25 @@ func TestSendEmail(t *testing.T) {
 					t.Errorf("unexpected error: %v", err)
 				}
 			}
+
+			if result == nil {
+				t.Errorf("expected non-nil response, got nil")
+			}
+
+			if result != nil {
+				if result.To != tt.request.To {
+					t.Errorf("expected To %q, got %q", tt.request.To, result.To)
+				}
+				if result.Subject != tt.request.Subject {
+					t.Errorf("expected Subject %q, got %q", tt.request.Subject, result.Subject)
+				}
+				if result.Body != tt.request.Body {
+					t.Errorf("expected Body %q, got %q", tt.request.Body, result.Body)
+				}
+				if result.Status != "sent" {
+					t.Errorf("expected Status 'sent', got %q", result.Status)
+				}
+			}
 		})
 	}
 }
@@ -72,9 +106,7 @@ func TestSendEmailWithContext(t *testing.T) {
 	tests := []struct {
 		name          string
 		contextSetup  func() context.Context
-		to            string
-		subject       string
-		body          string
+		request       *request.SaveEmailRequest
 		expectedError bool
 	}{
 		{
@@ -82,9 +114,12 @@ func TestSendEmailWithContext(t *testing.T) {
 			contextSetup: func() context.Context {
 				return context.Background()
 			},
-			to:            "test@example.com",
-			subject:       "Subject",
-			body:          "Body",
+			request: &request.SaveEmailRequest{
+				ID:      "1",
+				To:      "test@example.com",
+				Subject: "Subject",
+				Body:    "Body",
+			},
 			expectedError: false,
 		},
 		{
@@ -94,9 +129,12 @@ func TestSendEmailWithContext(t *testing.T) {
 				cancel()
 				return ctx
 			},
-			to:            "test@example.com",
-			subject:       "Subject",
-			body:          "Body",
+			request: &request.SaveEmailRequest{
+				ID:      "2",
+				To:      "test@example.com",
+				Subject: "Subject",
+				Body:    "Body",
+			},
 			expectedError: true,
 		},
 		{
@@ -106,9 +144,12 @@ func TestSendEmailWithContext(t *testing.T) {
 				cancel()
 				return ctx
 			},
-			to:            "test@example.com",
-			subject:       "Subject",
-			body:          "Body",
+			request: &request.SaveEmailRequest{
+				ID:      "3",
+				To:      "test@example.com",
+				Subject: "Subject",
+				Body:    "Body",
+			},
 			expectedError: true,
 		},
 	}
@@ -117,7 +158,7 @@ func TestSendEmailWithContext(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := NewEmailService()
 			ctx := tt.contextSetup()
-			err := svc.SendEmail(ctx, tt.to, tt.subject, tt.body)
+			result, err := svc.SendEmail(ctx, tt.request)
 
 			if tt.expectedError {
 				if err == nil {
@@ -126,6 +167,9 @@ func TestSendEmailWithContext(t *testing.T) {
 			} else {
 				if err != nil {
 					t.Errorf("unexpected error: %v", err)
+				}
+				if result == nil {
+					t.Errorf("expected non-nil response, got nil")
 				}
 			}
 		})
