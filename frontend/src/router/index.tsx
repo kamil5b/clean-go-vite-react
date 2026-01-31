@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
-import { HomePage, CounterPage } from "@/pages";
+import { HomePage, CounterPage, LoginPage, RegisterPage } from "@/pages";
 import { RootLayout } from "@/layouts/RootLayout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const router = createBrowserRouter([
     {
@@ -12,7 +13,19 @@ const router = createBrowserRouter([
             },
             {
                 path: "/counter",
-                element: <CounterPage />,
+                element: (
+                    <ProtectedRoute>
+                        <CounterPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/login",
+                element: <LoginPage />,
+            },
+            {
+                path: "/register",
+                element: <RegisterPage />,
             },
         ],
     },

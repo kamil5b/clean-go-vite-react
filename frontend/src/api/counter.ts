@@ -1,11 +1,9 @@
+import { GetCounter } from "@/types/response/counter";
+
 const API_BASE_URL = "http://localhost:8080/api";
 
-export interface CounterResponse {
-    value: number;
-}
-
 export const counterApi = {
-    getCounter: async (): Promise<CounterResponse> => {
+    getCounter: async (): Promise<GetCounter> => {
         const response = await fetch(`${API_BASE_URL}/counter`, {
             method: "GET",
         });
@@ -15,7 +13,7 @@ export const counterApi = {
         return response.json();
     },
 
-    incrementCounter: async (): Promise<CounterResponse> => {
+    incrementCounter: async (): Promise<GetCounter> => {
         const response = await fetch(`${API_BASE_URL}/counter`, {
             method: "POST",
         });

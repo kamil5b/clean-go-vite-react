@@ -13,7 +13,7 @@ import (
 
 // UserHandler handles user-related HTTP requests
 type UserHandler struct {
-	userService userSvc.UserService
+	userService  userSvc.UserService
 	tokenService token.TokenService
 	csrfService  csrf.CSRFService
 }
