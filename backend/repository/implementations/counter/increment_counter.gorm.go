@@ -6,8 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// IncrementCounter increments the counter in SQLite and returns the new value
-func (r *SQLiteCounterRepository) IncrementCounter(ctx context.Context) (int, error) {
+// IncrementCounter increments the counter in GORM and returns the new value
+func (r *GORMCounterRepository) IncrementCounter(ctx context.Context) (int, error) {
 	select {
 	case <-ctx.Done():
 		return 0, ctx.Err()

@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-// GetMessage returns a stored message from SQLite
-func (r *SQLiteMessageRepository) GetMessage(ctx context.Context, key string) (string, error) {
+// GetMessage returns a stored message from GORM
+func (r *GORMMessageRepository) GetMessage(ctx context.Context, key string) (string, error) {
 	select {
 	case <-ctx.Done():
 		return "", ctx.Err()

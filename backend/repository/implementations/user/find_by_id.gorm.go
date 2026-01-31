@@ -8,8 +8,8 @@ import (
 	"github.com/kamil5b/clean-go-vite-react/backend/model/entity"
 )
 
-// FindByID finds a user by ID in SQLite
-func (r *SQLiteUserRepository) FindByID(ctx context.Context, id uuid.UUID) (user *entity.UserEntity, err error) {
+// FindByID finds a user by ID in GORM
+func (r *GORMUserRepository) FindByID(ctx context.Context, id uuid.UUID) (user *entity.UserEntity, err error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()

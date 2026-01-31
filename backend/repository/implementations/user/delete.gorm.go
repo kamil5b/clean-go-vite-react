@@ -5,8 +5,8 @@ import (
 	"strconv"
 )
 
-// Delete deletes a user in SQLite
-func (r *SQLiteUserRepository) Delete(ctx context.Context, id string) error {
+// Delete deletes a user in GORM
+func (r *GORMUserRepository) Delete(ctx context.Context, id string) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()

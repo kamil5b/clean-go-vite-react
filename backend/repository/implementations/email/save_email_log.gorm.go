@@ -4,8 +4,8 @@ import (
 	"context"
 )
 
-// SaveEmailLog saves an email log entry to SQLite
-func (r *SQLiteEmailRepository) SaveEmailLog(ctx context.Context, to, subject, body string) error {
+// SaveEmailLog saves an email log entry to GORM
+func (r *GORMEmailRepository) SaveEmailLog(ctx context.Context, to, subject, body string) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()

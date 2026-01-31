@@ -6,8 +6,8 @@ import (
 	"github.com/kamil5b/clean-go-vite-react/backend/model/entity"
 )
 
-// Update updates a user in SQLite
-func (r *SQLiteUserRepository) Update(ctx context.Context, id string, user entity.UserEntity) error {
+// Update updates a user in GORM
+func (r *GORMUserRepository) Update(ctx context.Context, id string, user entity.UserEntity) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()

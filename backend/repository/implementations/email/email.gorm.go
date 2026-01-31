@@ -5,8 +5,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// SQLiteEmailRepository is a SQLite implementation of EmailRepository
-type SQLiteEmailRepository struct {
+// GORMEmailRepository is a GORM implementation of EmailRepository
+type GORMEmailRepository struct {
 	db *gorm.DB
 }
 
@@ -18,14 +18,14 @@ func (EmailLogModel) TableName() string {
 	return "email_logs"
 }
 
-// NewGORMEmailRepository creates a new SQLite email repository
-func NewGORMEmailRepository(db *gorm.DB) (*SQLiteEmailRepository, error) {
+// NewGORMEmailRepository creates a new GORM email repository
+func NewGORMEmailRepository(db *gorm.DB) (*GORMEmailRepository, error) {
 	// Auto-migrate the schema
 	if err := db.AutoMigrate(&EmailLogModel{}); err != nil {
 		return nil, err
 	}
 
-	return &SQLiteEmailRepository{
+	return &GORMEmailRepository{
 		db: db,
 	}, nil
 }

@@ -6,8 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// SQLiteCounterRepository is a SQLite implementation of CounterRepository
-type SQLiteCounterRepository struct {
+// GORMCounterRepository is a GORM implementation of CounterRepository
+type GORMCounterRepository struct {
 	db *gorm.DB
 }
 
@@ -18,8 +18,8 @@ func (CounterModel) TableName() string {
 	return "counters"
 }
 
-// NewGORMCounterRepository creates a new SQLite counter repository
-func NewGORMCounterRepository(db *gorm.DB) (*SQLiteCounterRepository, error) {
+// NewGORMCounterRepository creates a new GORM counter repository
+func NewGORMCounterRepository(db *gorm.DB) (*GORMCounterRepository, error) {
 	// Auto-migrate the schema
 	if err := db.AutoMigrate(&CounterModel{}); err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func NewGORMCounterRepository(db *gorm.DB) (*SQLiteCounterRepository, error) {
 		db.Create(&CounterModel{ID: uuid.New(), Value: 0})
 	}
 
-	return &SQLiteCounterRepository{
+	return &GORMCounterRepository{
 		db: db,
 	}, nil
 }

@@ -2,8 +2,8 @@ package counter
 
 import "context"
 
-// GetCounter returns the current counter value from SQLite
-func (r *SQLiteCounterRepository) GetCounter(ctx context.Context) (int, error) {
+// GetCounter returns the current counter value from GORM
+func (r *GORMCounterRepository) GetCounter(ctx context.Context) (int, error) {
 	select {
 	case <-ctx.Done():
 		return 0, ctx.Err()

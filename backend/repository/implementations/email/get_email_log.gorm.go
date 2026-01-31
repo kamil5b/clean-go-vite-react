@@ -6,8 +6,8 @@ import (
 	"strconv"
 )
 
-// GetEmailLog retrieves an email log entry from SQLite
-func (r *SQLiteEmailRepository) GetEmailLog(ctx context.Context, id string) (map[string]interface{}, error) {
+// GetEmailLog retrieves an email log entry from GORM
+func (r *GORMEmailRepository) GetEmailLog(ctx context.Context, id string) (map[string]interface{}, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()

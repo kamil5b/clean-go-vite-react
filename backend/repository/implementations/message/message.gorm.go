@@ -6,16 +6,16 @@ import (
 	"gorm.io/gorm"
 )
 
-// SQLiteMessageRepository is a SQLite implementation of MessageRepository
-type SQLiteMessageRepository struct {
+// GORMMessageRepository is a GORM implementation of MessageRepository
+type GORMMessageRepository struct {
 	db *gorm.DB
 }
 
 // MessageModel represents the message table schema
 type MessageModel = entity.MessageEntity
 
-// NewGORMMessageRepository creates a new SQLite message repository
-func NewGORMMessageRepository(db *gorm.DB) (*SQLiteMessageRepository, error) {
+// NewGORMMessageRepository creates a new GORM message repository
+func NewGORMMessageRepository(db *gorm.DB) (*GORMMessageRepository, error) {
 	// Auto-migrate the schema
 	if err := db.AutoMigrate(&MessageModel{}); err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func NewGORMMessageRepository(db *gorm.DB) (*SQLiteMessageRepository, error) {
 		db.Create(&MessageModel{ID: uuid.New(), Key: "default", Value: "Welcome to Clean Go Vite React!"})
 	}
 
-	return &SQLiteMessageRepository{
+	return &GORMMessageRepository{
 		db: db,
 	}, nil
 }
