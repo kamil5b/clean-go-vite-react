@@ -1,8 +1,18 @@
 package counter
 
-import "context"
+import (
+	"context"
 
-// IncrementCounter increments the counter and returns the new value
-func (s *counterService) IncrementCounter(ctx context.Context) (int, error) {
-	return s.repo.IncrementCounter(ctx)
+	"github.com/kamil5b/clean-go-vite-react/backend/model/response"
+)
+
+// IncrementCounter increments the counter and returns the new value as a response
+func (s *counterService) IncrementCounter(ctx context.Context) (*response.GetCounter, error) {
+	value, err := s.repo.IncrementCounter(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &response.GetCounter{
+		Value: value,
+	}, nil
 }
