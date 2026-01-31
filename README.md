@@ -2,7 +2,7 @@
 
 This repository demonstrates a **clean, detachable integration** between:
 
-* **Go (Echo)** backend API
+* **Go (Echo)** backend API with Clean Architecture
 * **Vite + React (TypeScript)** frontend
 * Optional **single-binary deployment** via Go `embed`
 * First-class **Vite HMR** during development
@@ -15,7 +15,7 @@ The key goal is to support a great developer experience **without coupling front
 
 I originally wanted to embed a Vite + React app into a Go binary to ship a single full-stack executable.
 
-I started from ideas in [this great video](https://www.youtube.com/watch?v=w_Rv_3-FF0g), which shows how to embed frontend assets in Go. While that works, it compromises one of Vite’s biggest strengths: **its dev server and hot module reloading**.
+I started from ideas in [this great video](https://www.youtube.com/watch?v=w_Rv_3-FF0g), which shows how to embed frontend assets in Go. While that works, it compromises one of Vite's biggest strengths: **its dev server and hot module reloading**.
 
 This project keeps **Vite HMR exactly as-is in development**, while still allowing:
 
@@ -45,16 +45,25 @@ If you delete the frontend tomorrow, the backend still builds and runs.
 │   └── server/
 │       └── main.go          # Application entrypoint (composition only)
 │
-├── internal/
-│   ├── api/                # API routes & handlers
-│   └── web/                # OPTIONAL web hosting layer
-│       ├── web.go          # dev vs prod selection
-│       ├── dev_proxy.go    # dev-only Vite proxy
-│       ├── static.go       # static file serving
-│       └── embedded_assets.go # go:embed (prod only)
+├── backend/                # Backend Clean Architecture
+│   ├── api/               # HTTP layer (handlers, middleware, routes)
+│   ├── service/           # Business logic layer
+│   ├── repository/        # Data access layer (interfaces + implementations)
+│   ├── model/             # Data models (entities, DTOs)
+│   ├── di/                # Dependency injection
+│   └── platform/          # Infrastructure (config, database)
 │
-├── frontend/               # Standalone Vite + React app
+├── embedder/              # OPTIONAL web hosting layer
+│   └── embedder.go        # dev proxy + static serving
+│
+├── frontend/              # Standalone Vite + React app
 │   ├── src/
+│   │   ├── api/          # API client modules
+│   │   ├── types/        # TypeScript type definitions
+│   │   ├── components/   # React components
+│   │   ├── hooks/        # Custom React hooks
+│   │   ├── pages/        # Page components
+│   │   └── ...
 │   ├── index.html
 │   ├── vite.config.ts
 │   └── package.json
@@ -67,8 +76,8 @@ If you delete the frontend tomorrow, the backend still builds and runs.
 
 ### Important Distinction
 
-* `internal/api` → **application logic**
-* `internal/web` → **optional infrastructure**
+* `backend/` → **application logic**
+* `embedder/` → **optional infrastructure**
 
 The backend does not depend on the frontend to function.
 
@@ -76,10 +85,12 @@ The backend does not depend on the frontend to function.
 
 ## Backend Overview (Go)
 
-* Uses **Echo**
+* Uses **Echo** web framework
+* Implements **Clean Architecture** with strict layer separation
 * Exposes APIs under `/api/*`
 * Contains no frontend-specific logic
 * Can be deployed independently as a pure API service
+* Includes JWT authentication, CSRF protection, and comprehensive testing
 
 The backend may optionally:
 
@@ -87,6 +98,8 @@ The backend may optionally:
 * serve embedded static assets in production
 
 These behaviors are **completely removable**.
+
+**For detailed backend documentation, see [`backend/README.md`](./backend/README.md)**
 
 ---
 
@@ -99,8 +112,9 @@ yarn create vite
 ```
 
 * Runs independently with `npm run dev`
-* Uses Vite’s dev server and HMR
+* Uses Vite's dev server and HMR
 * Communicates with backend via HTTP only
+* Includes TypeScript, Tailwind (we use Shadcn), Zod validation, and strict type organization
 
 ### API Proxy (Frontend-Owned)
 
@@ -108,12 +122,14 @@ yarn create vite
 // vite.config.ts
 server: {
   proxy: {
-    '/api': 'http://localhost:3000'
+    '/api': 'http://localhost:8080'
   }
 }
 ```
 
 This allows frontend and backend to run on separate ports with no backend awareness of Vite.
+
+**For detailed frontend documentation, see [`frontend/README.md`](./frontend/README.md)**
 
 ---
 
@@ -125,7 +141,7 @@ make dev
 
 Runs:
 
-* Go API server (optionally with live reload via `air`)
+* Go API server (with live reload via `air`)
 * Vite dev server with full HMR
 
 Frontend changes (TSX, CSS, state) update instantly **without page reload**.
@@ -142,12 +158,12 @@ This will:
 
 1. Build frontend assets into `frontend/dist`
 2. Embed those assets into the Go binary
-3. Produce a single executable
+3. Produce a single executable in `bin/server`
 
 Run with:
 
 ```bash
-./server
+./bin/server
 ```
 
 This mode is optional — the frontend can also be deployed separately.
@@ -157,7 +173,7 @@ This mode is optional — the frontend can also be deployed separately.
 ## Docker Build
 
 ```bash
-docker build -t go-vite .
+docker build -t go-vite-react .
 ```
 
 Uses a multi-stage Dockerfile:
@@ -173,7 +189,7 @@ Uses a multi-stage Dockerfile:
 ### Development
 
 * Frontend runs on Vite dev server (`localhost:5173`)
-* Backend serves `/api/*`
+* Backend serves `/api/*` on (`localhost:8080`)
 * Optional proxy forwards non-API requests to Vite
 
 This preserves **native Vite HMR behavior** exactly as intended.
@@ -190,18 +206,72 @@ This preserves **native Vite HMR behavior** exactly as intended.
 
 This repo is intentionally structured so detaching is trivial.
 
-When ready:
+### Backend Changes
 
-1. Remove `internal/web`
-2. Remove the web registration call in `main.go`
-3. Enable CORS
-4. Deploy frontend to a CDN
-5. Deploy backend as an API service
+1. **Remove embedder integration** in `cmd/server/main.go`:
+   ```go
+   // Remove this line:
+   embedder.RegisterHandlers(e)
+   ```
 
-No API handlers change.
-No business logic changes.
+2. **Enable CORS** in `backend/api/router.go`:
+   ```go
+   e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+       AllowOrigins: []string{"https://your-frontend-domain.com"},
+       AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+       AllowHeaders: []string{"Authorization", "Content-Type", "X-CSRF-Token"},
+       AllowCredentials: true,
+   }))
+   ```
 
-See **`DETACH.md`** for a step-by-step guide.
+3. **Delete embedder directory**:
+   ```bash
+   rm -rf embedder/
+   ```
+
+4. **Deploy backend** as standalone API service
+
+### Frontend Changes
+
+1. **Update API base URL** in `frontend/vite.config.ts`:
+   ```ts
+   // Remove proxy in production, or configure for your API domain
+   export default defineConfig({
+     // ... other config
+     server: {
+       proxy: {
+         '/api': 'http://localhost:8080' // Only for local dev
+       }
+     }
+   })
+   ```
+
+2. **Set production API URL** in your frontend code:
+   ```ts
+   const API_BASE_URL = import.meta.env.PROD 
+     ? 'https://your-backend-api.com'
+     : '';
+   ```
+
+3. **Deploy frontend** to CDN (Vercel, Netlify, Cloudflare Pages, etc.)
+
+### Result
+
+- **Backend**: Pure API service on your domain (e.g., `api.yourdomain.com`)
+- **Frontend**: Static site on CDN (e.g., `yourdomain.com`)
+- **No code changes** to API handlers or business logic
+- **Communication**: Frontend calls backend via HTTPS with CORS
+
+---
+
+## Documentation
+
+### Other Guides
+- **[AUTH.md](./AUTH.md)** - Authentication implementation guide
+
+### Component Documentation
+- **[backend/README.md](./backend/README.md)** - Complete backend architecture guide (Clean Architecture, TDD workflow)
+- **[frontend/README.md](./frontend/README.md)** - Frontend structure and type rules
 
 ---
 

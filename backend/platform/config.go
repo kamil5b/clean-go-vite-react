@@ -13,7 +13,6 @@ type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	Redis    RedisConfig
-	Asynq    AsynqConfig
 }
 
 // ServerConfig holds HTTP server configuration
@@ -43,16 +42,6 @@ type RedisConfig struct {
 	Password string
 }
 
-// AsynqConfig holds Asynq configuration
-type AsynqConfig struct {
-	Enabled       bool
-	RedisAddr     string
-	Concurrency   int
-	MaxRetries    int
-	RetryDelayMin time.Duration
-	RetryDelayMax time.Duration
-}
-
 // NewConfig loads configuration from environment variables
 func NewConfig() *Config {
 	return &Config{
@@ -75,14 +64,6 @@ func NewConfig() *Config {
 			Port:     getEnvInt("REDIS_PORT", 6379),
 			DB:       getEnvInt("REDIS_DB", 0),
 			Password: getEnv("REDIS_PASSWORD", ""),
-		},
-		Asynq: AsynqConfig{
-			Enabled:       getEnvBool("ASYNQ_ENABLED", true),
-			RedisAddr:     getEnv("ASYNQ_REDIS_ADDR", "localhost:6379"),
-			Concurrency:   getEnvInt("ASYNQ_CONCURRENCY", 10),
-			MaxRetries:    getEnvInt("ASYNQ_MAX_RETRIES", 3),
-			RetryDelayMin: getEnvDuration("ASYNQ_RETRY_DELAY_MIN", 5*time.Second),
-			RetryDelayMax: getEnvDuration("ASYNQ_RETRY_DELAY_MAX", 5*time.Minute),
 		},
 	}
 }

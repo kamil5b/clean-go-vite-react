@@ -2,14 +2,13 @@ MOCKGEN := mockgen
 REPO_INTERFACES_DIR := backend/repository/interfaces
 REPO_MOCK_DIR := backend/repository/mock
 
-.PHONY: help dev server worker build test install-deps clean repository-mocks
+.PHONY: help dev server build test install-deps clean repository-mocks
 
 help:
 	@echo "Available commands:"
 	@echo "  make install-deps  - Install dependencies"
 	@echo "  make dev           - Start development (frontend + server)"
 	@echo "  make server        - Start HTTP server only"
-	@echo "  make worker        - Start async worker"
 	@echo "  make build         - Build production binaries"
 	@echo "  make test          - Run all tests"
 	@echo "  make clean         - Clean build artifacts"
@@ -21,21 +20,16 @@ install-deps:
 
 dev:
 	@echo "Starting development environment..."
-	cd frontend && yarn dev & sleep 3 && DEV_MODE=true go run ./cmd/server
+	cd frontend && yarn dev & sleep 1 && DEV_MODE=true air
 
 server:
-	DEV_MODE=true go run ./cmd/server
-
-worker:
-	go run ./cmd/worker
+	DEV_MODE=true air
 
 build:
 	@echo "Building frontend..."
 	cd frontend && yarn build
 	@echo "Building server binary..."
 	ENV=prod go build -buildvcs=false -o ./bin/server ./cmd/server/main.go
-	@echo "Building worker binary..."
-	ENV=prod go build -buildvcs=false -o ./bin/worker ./cmd/worker/main.go
 
 test:
 	go test -v -cover -race ./...
@@ -64,3 +58,6 @@ repository-mocks:
 			-destination=$(REPO_MOCK_DIR)/$${name}_mock.go \
 			-package=mock; \
 	done
+```
+
+Now let me update the docker-compose files and other files:

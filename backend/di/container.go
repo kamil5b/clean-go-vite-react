@@ -14,7 +14,6 @@ import (
 
 	counterSvc "github.com/kamil5b/clean-go-vite-react/backend/service/counter"
 	csrfSvc "github.com/kamil5b/clean-go-vite-react/backend/service/csrf"
-	emailSvc "github.com/kamil5b/clean-go-vite-react/backend/service/email"
 	healthSvc "github.com/kamil5b/clean-go-vite-react/backend/service/health"
 	messageSvc "github.com/kamil5b/clean-go-vite-react/backend/service/message"
 	tokenSvc "github.com/kamil5b/clean-go-vite-react/backend/service/token"
@@ -33,7 +32,6 @@ type Container struct {
 // Services holds all service layer dependencies
 type Services struct {
 	Message messageSvc.MessageService
-	Email   emailSvc.EmailService
 	Health  healthSvc.HealthService
 	Counter counterSvc.CounterService
 	User    userSvc.UserService
@@ -78,7 +76,6 @@ func NewContainer(cfg *platform.Config) *Container {
 	// Initialize services
 	services := &Services{
 		Message: messageSvc.NewMessageService(messageRepository),
-		Email:   emailSvc.NewEmailService(),
 		Health:  healthSvc.NewHealthService(),
 		Counter: counterSvc.NewCounterService(counterRepository),
 		User:    userSvc.NewUserService(userRepository, tokenService),
