@@ -56,7 +56,7 @@ func main() {
 	api.SetupRoutes(e, logic)
 
 	// Register frontend handler (dev proxy or static assets)
-	web.RegisterHandlers(e)
+	e.Any("/*", echo.WrapHandler(web.Handler()))
 
 	// Start server in a goroutine
 	go func() {
