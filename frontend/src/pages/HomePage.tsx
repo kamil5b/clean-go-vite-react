@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import reactLogo from "../assets/react.svg";
 import viteLogo from "/vite.svg";
+import { messageApi } from "@/api/message";
 
 export function HomePage() {
     const [messageFromServer, setMessageFromServer] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch("/api/message");
-            const data = await response.json();
-            setMessageFromServer(data.message);
+            const data = await messageApi.getMessage();
+            setMessageFromServer(data?.content || "No message received");
         };
 
         fetchData().catch((e) => console.error(e));

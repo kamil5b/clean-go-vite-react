@@ -202,11 +202,35 @@ This preserves **native Vite HMR behavior** exactly as intended.
 
 ---
 
-## Detaching Frontend and Backend Later
+## Embedded Deployment with Easy Detachment
 
-This repo is intentionally structured so detaching is trivial.
+The Vite React app is **embedded into the Go binary** for single-file deployment, but the architecture makes it **trivially easy to detach later** when you need separate services.
 
-### Backend Changes
+**Key Benefit**: Start simple with one binary, scale to microservices without refactoring.
+
+### How Embedding Works
+
+In production, `frontend/dist` is embedded into the Go binary. The `embedder/` package handles:
+- **Development**: Proxies requests to Vite dev server (preserves HMR)
+- **Production**: Serves embedded static files from memory
+
+This gives you a **single deployable binary** with the full stack.
+
+---
+
+### When to Detach
+
+Detach when you need:
+- Independent scaling of frontend and backend
+- CDN distribution for frontend assets
+- Separate deployment pipelines
+- Multiple frontends consuming the same API
+
+### How to Detach
+
+Because the architecture is designed for detachment, it takes only a few steps:
+
+#### Backend Changes
 
 1. **Remove embedder integration** in `cmd/server/main.go`:
    ```go
@@ -255,12 +279,14 @@ This repo is intentionally structured so detaching is trivial.
 
 3. **Deploy frontend** to CDN (Vercel, Netlify, Cloudflare Pages, etc.)
 
-### Result
+#### Result
 
-- **Backend**: Pure API service on your domain (e.g., `api.yourdomain.com`)
-- **Frontend**: Static site on CDN (e.g., `yourdomain.com`)
-- **No code changes** to API handlers or business logic
-- **Communication**: Frontend calls backend via HTTPS with CORS
+- ✅ **Backend**: Pure API service (e.g., `api.yourdomain.com`)
+- ✅ **Frontend**: Static site on CDN (e.g., `yourdomain.com`)
+- ✅ **Zero refactoring**: No changes to API handlers or business logic
+- ✅ **Clean separation**: Frontend and backend communicate via HTTPS with CORS
+
+**The entire detachment takes less than 10 minutes** because the architecture never couples them in the first place.
 
 ---
 
