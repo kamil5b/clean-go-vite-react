@@ -39,6 +39,9 @@ If you delete the frontend tomorrow, the backend still builds and runs.
 
 ## Project Structure
 
+<img width="5173" height="5910" alt="Project Structure" src="https://github.com/user-attachments/assets/eeaebeec-55e6-4117-8ed9-68f120f5261a" />
+
+
 ```txt
 .
 ├── cmd/
