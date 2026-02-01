@@ -1,19 +1,23 @@
-import {
-    LoginResponse,
-    RegisterResponse,
-    RefreshResponse,
-    CSRFTokenResponse,
-    GetUser,
-} from "@/types/response/user";
-
 const API_BASE_URL = "http://localhost:8080/api";
+
+// Simple inline types - no over-engineering
+type User = {
+    id: string;
+    email: string;
+    name: string;
+};
+
+type AuthResponse = {
+    user: User;
+    token: string;
+};
 
 export const authApi = {
     register: async (
         email: string,
         password: string,
         name: string,
-    ): Promise<RegisterResponse> => {
+    ): Promise<AuthResponse> => {
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
             credentials: "include",
@@ -29,7 +33,7 @@ export const authApi = {
         return response.json();
     },
 
-    login: async (email: string, password: string): Promise<LoginResponse> => {
+    login: async (email: string, password: string): Promise<AuthResponse> => {
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: "POST",
             credentials: "include",
@@ -52,7 +56,7 @@ export const authApi = {
         });
     },
 
-    getCurrentUser: async (): Promise<GetUser | null> => {
+    getCurrentUser: async (): Promise<User | null> => {
         const response = await fetch(`${API_BASE_URL}/auth/me`, {
             credentials: "include",
         });
@@ -66,29 +70,7 @@ export const authApi = {
 
         return response.json();
     },
-
-    refreshToken: async (): Promise<RefreshResponse> => {
-        const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-            method: "POST",
-            credentials: "include",
-        });
-
-        if (!response.ok) {
-            throw new Error("Token refresh failed");
-        }
-
-        return response.json();
-    },
-
-    getCsrfToken: async (): Promise<CSRFTokenResponse> => {
-        const response = await fetch(`${API_BASE_URL}/csrf`, {
-            credentials: "include",
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch CSRF token");
-        }
-
-        return response.json();
-    },
 };
+
+// Export types for use in other files
+export type { User, AuthResponse };

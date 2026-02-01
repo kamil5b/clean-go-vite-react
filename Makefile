@@ -1,7 +1,3 @@
-MOCKGEN := mockgen
-REPO_INTERFACES_DIR := backend/repository/interfaces
-REPO_MOCK_DIR := backend/repository/mock
-
 # Detect OS and Architecture
 GOOS := $(shell go env GOOS)
 GOARCH := $(shell go env GOARCH)
@@ -11,7 +7,7 @@ ifeq ($(GOOS),windows)
 	BINARY_PATH := ./bin/$(BINARY_NAME)-$(GOOS)-$(GOARCH).exe
 endif
 
-.PHONY: help dev server build test install-deps clean repository-mocks
+.PHONY: help dev server build test install-deps clean
 
 help:
 	@echo "Available commands:"
@@ -20,9 +16,6 @@ help:
 	@echo "  make server        - Start HTTP server only"
 	@echo "  make build         - Build production binary for current OS/Arch"
 	@echo "  make build-all     - Build production binaries for all platforms"
-	@echo "  make build-linux   - Build for Linux (amd64)"
-	@echo "  make build-windows - Build for Windows (amd64)"
-	@echo "  make build-darwin  - Build for macOS (amd64)"
 	@echo "  make test          - Run all tests"
 	@echo "  make clean         - Clean build artifacts"
 
@@ -80,10 +73,7 @@ build-darwin-arm64:
 	ENV=prod GOOS=darwin GOARCH=arm64 go build -buildvcs=false -o ./bin/$(BINARY_NAME)-darwin-arm64 ./cmd/server/main.go
 
 test:
-	go test -v -cover -race ./...
-
-test-verbose:
-	go test -v -cover -race -failfast ./...
+	go test -v ./...
 
 test-coverage:
 	go test -v -cover -coverprofile=coverage.out ./...
@@ -93,16 +83,3 @@ clean:
 	rm -rf ./bin
 	rm -f coverage.out coverage.html
 	go clean -testcache
-
-repository-mocks:
-	@rm -rf $(REPO_MOCK_DIR)
-	@mkdir -p $(REPO_MOCK_DIR)
-	@for f in $(REPO_INTERFACES_DIR)/*.go; do \
-		base=$$(basename $$f .go); \
-		name=$${base%_interface}; \
-		echo "Generating mock for interface: $$name"; \
-		$(MOCKGEN) \
-			-source=$$f \
-			-destination=$(REPO_MOCK_DIR)/$${name}_mock.go \
-			-package=mock; \
-	done

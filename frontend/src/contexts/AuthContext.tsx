@@ -5,11 +5,10 @@ import {
     useEffect,
     ReactNode,
 } from "react";
-import { authApi } from "@/api/auth";
-import { GetUser } from "@/types/response/user";
+import { authApi, User } from "@/api/auth";
 
 interface AuthContextType {
-    user: GetUser | null;
+    user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
@@ -20,7 +19,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<GetUser | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
