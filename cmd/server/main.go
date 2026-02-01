@@ -41,7 +41,7 @@ func main() {
 	}))
 
 	// Register frontend handlers (dev proxy or static assets)
-	web.RegisterHandlers(e)
+	e.Any("/*", echo.WrapHandler(web.Handler()))
 
 	// Start server in a goroutine
 	go func() {

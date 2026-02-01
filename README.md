@@ -2,10 +2,11 @@
 
 This repository demonstrates a **clean, detachable integration** between:
 
-* **Go (Echo)** backend API with Clean Architecture
+* **Go** backend API with Clean Architecture
 * **Vite + React (TypeScript)** frontend
 * Optional **single-binary deployment** via Go `embed`
 * First-class **Vite HMR** during development
+* **Framework-agnostic** frontend serving layer
 
 The key goal is to support a great developer experience **without coupling frontend and backend**, so they can be separated later with minimal changes.
 
@@ -56,8 +57,8 @@ If you delete the frontend tomorrow, the backend still builds and runs.
 │   ├── di/                # Dependency injection
 │   └── platform/          # Infrastructure (config, database)
 │
-├── embedder/              # OPTIONAL web hosting layer
-│   └── embedder.go        # dev proxy + static serving
+├── embedder/              # OPTIONAL framework-agnostic web hosting layer
+│   └── embedder.go        # dev proxy + static serving (http.Handler)
 │
 ├── frontend/              # Standalone Vite + React app
 │   ├── src/
@@ -88,17 +89,19 @@ The backend does not depend on the frontend to function.
 
 ## Backend Overview (Go)
 
-* Uses **Echo** web framework
+* **Framework-agnostic** — use any router (Echo, Gin, Chi, standard `net/http`)
 * Implements **Clean Architecture** with strict layer separation
 * Exposes APIs under `/api/*`
 * Contains no frontend-specific logic
 * Can be deployed independently as a pure API service
 * Includes JWT authentication, CSRF protection, and comprehensive testing
 
-The backend may optionally:
+The backend may optionally use the `embedder` package to:
 
 * proxy frontend requests in development
 * serve embedded static assets in production
+
+The embedder uses standard `http.Handler` interface and works with any Go web framework.
 
 These behaviors are **completely removable**.
 
@@ -213,11 +216,23 @@ The Vite React app is **embedded into the Go binary** for single-file deployment
 
 ### How Embedding Works
 
-In production, `frontend/dist` is embedded into the Go binary. The `embedder/` package handles:
+In production, `frontend/dist` is embedded into the Go binary. The `embedder/` package is **framework-agnostic** and returns a standard `http.Handler` that:
 - **Development**: Proxies requests to Vite dev server (preserves HMR)
 - **Production**: Serves embedded static files from memory
 
 This gives you a **single deployable binary** with the full stack.
+
+**Integration Example** (works with any framework):
+```go
+// With Echo
+e.Any("/*", echo.WrapHandler(embedder.Handler()))
+
+// With standard net/http
+mux.Handle("/", embedder.Handler())
+
+// With Gin
+r.NoRoute(gin.WrapH(embedder.Handler()))
+```
 
 ---
 
@@ -237,11 +252,14 @@ Because the architecture is designed for detachment, it takes only a few steps:
 
 1. **Remove embedder integration** in `cmd/server/main.go`:
    ```go
-   // Remove this line:
-   embedder.RegisterHandlers(e)
+   // Remove this line (example with Echo):
+   e.Any("/*", echo.WrapHandler(embedder.Handler()))
+   
+   // Or with standard net/http:
+   mux.Handle("/", embedder.Handler())
    ```
 
-2. **Enable CORS** in `backend/api/router.go`:
+2. **Enable CORS** for your framework:
    ```go
    e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
        AllowOrigins: []string{"https://your-frontend-domain.com"},

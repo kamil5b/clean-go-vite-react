@@ -1,49 +1,62 @@
 package embedder
 
 import (
+	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
 	"path/filepath"
-
-	"github.com/labstack/echo/v4"
+	"strings"
 )
 
-// RegisterHandlers sets up frontend serving
-func RegisterHandlers(e *echo.Echo) {
+// Handler returns an http.Handler that serves the frontend
+func Handler() http.Handler {
 	isDev := os.Getenv("DEV_MODE") == "true"
 
 	if isDev {
-		// In development, proxy to Vite dev server
-		setupDevProxy(e)
-	} else {
-		// In production, serve embedded assets
-		setupStaticAssets(e)
+		return devProxyHandler()
 	}
+	return staticAssetsHandler()
 }
 
-// setupDevProxy configures proxy to Vite dev server
-func setupDevProxy(e *echo.Echo) {
+// devProxyHandler returns a handler that proxies to Vite dev server
+func devProxyHandler() http.Handler {
 	viteURL, err := url.Parse("http://localhost:5173")
 	if err != nil {
-		e.Logger.Fatal(err)
+		panic(err)
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(viteURL)
 
-	// Fallback to index.html for SPA routing
-	e.Any("/*", func(c echo.Context) error {
-		proxy.ServeHTTP(c.Response(), c.Request())
-		return nil
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		proxy.ServeHTTP(w, r)
 	})
 }
 
-// setupStaticAssets configures serving of embedded frontend assets
-func setupStaticAssets(e *echo.Echo) {
-	// Determine the frontend dist directory
-	distDir := "frontend/dist"
+// staticAssetsHandler returns a handler that serves embedded frontend assets
+func staticAssetsHandler() http.Handler {
+	distDir := findDistDirectory()
 
-	// Try to find the dist directory in multiple locations
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+
+		// Serve static assets
+		if strings.HasPrefix(path, "/assets/") || path == "/vite.svg" {
+			filePath := filepath.Join(distDir, strings.TrimPrefix(path, "/"))
+			if _, err := os.Stat(filePath); err == nil {
+				http.ServeFile(w, r, filePath)
+				return
+			}
+		}
+
+		// SPA routing: serve index.html for all other routes
+		indexPath := filepath.Join(distDir, "index.html")
+		http.ServeFile(w, r, indexPath)
+	})
+}
+
+// findDistDirectory locates the frontend dist directory
+func findDistDirectory() string {
 	possiblePaths := []string{
 		"frontend/dist",
 		"./frontend/dist",
@@ -63,22 +76,10 @@ func setupStaticAssets(e *echo.Echo) {
 	// Find which path exists
 	for _, path := range possiblePaths {
 		if info, err := os.Stat(path); err == nil && info.IsDir() {
-			distDir = path
-			break
+			return path
 		}
 	}
 
-	// Serve static files with proper file serving first
-	e.GET("/assets/*", func(c echo.Context) error {
-		return c.File(filepath.Join(distDir, c.Request().URL.Path[1:]))
-	})
-
-	e.GET("/vite.svg", func(c echo.Context) error {
-		return c.File(filepath.Join(distDir, "vite.svg"))
-	})
-
-	// SPA routing: serve index.html for any unmatched routes
-	e.GET("/*", func(c echo.Context) error {
-		return c.File(filepath.Join(distDir, "index.html"))
-	})
+	// Default fallback
+	return "frontend/dist"
 }
