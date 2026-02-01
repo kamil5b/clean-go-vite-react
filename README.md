@@ -9,6 +9,8 @@ This repository demonstrates a **clean, detachable integration** between:
 
 The key goal is to support a great developer experience **without coupling frontend and backend**, so they can be separated later with minimal changes.
 
+<img width="5197" height="6315" alt="Project System" src="https://github.com/user-attachments/assets/9099ce9e-be10-481a-a006-b8711ca3457b" />
+
 ---
 
 ## Why This Exists
@@ -38,8 +40,6 @@ If you delete the frontend tomorrow, the backend still builds and runs.
 ---
 
 ## Project Structure
-
-<img width="5173" height="5910" alt="Project Structure" src="https://github.com/user-attachments/assets/eeaebeec-55e6-4117-8ed9-68f120f5261a" />
 
 
 ```txt
