@@ -1,16 +1,17 @@
 import { GetMessage } from "@/types/response/message";
-
-const API_BASE_URL = "http://localhost:8080/api";
+import { apiClient } from "@/lib/apiClient";
 
 export const messageApi = {
     getMessage: async (): Promise<GetMessage | null> => {
-        const response = await fetch(`${API_BASE_URL}/message`);
+        const response = await apiClient("/message", {
+            skipAuthRefresh: true, // Public endpoint - don't trigger auth refresh
+        });
 
         if (!response.ok) {
             if (response.status === 401) {
                 return null;
             }
-            throw new Error("Failed to fetch current user");
+            throw new Error("Failed to fetch message");
         }
 
         return response.json();

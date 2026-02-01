@@ -17,22 +17,30 @@ func SetupRoutes(
 ) {
 	api := e.Group("/api")
 
-	// Public routes
+	// Public routes (no authentication required)
 	api.GET("/message", messageHandler.GetMessage)
-	api.GET("/counter", counterHandler.GetCounter)
-	api.POST("/counter", counterHandler.IncrementCounter)
 
 	// Auth routes (public)
 	api.POST("/auth/register", userHandler.Register)
 	api.POST("/auth/login", userHandler.Login)
-	api.GET("/auth/csrf", userHandler.GetCSRFToken)
-	api.POST("/auth/logout", userHandler.Logout)
 	api.POST("/auth/refresh", userHandler.Refresh)
+	api.GET("/csrf", userHandler.GetCSRFToken)
 
-	// Protected routes
+	// Protected routes (require authentication)
 	protected := api.Group("")
 	protected.Use(middleware.AuthMiddleware(tokenService))
+
+	// Auth protected endpoints
 	protected.GET("/auth/me", userHandler.GetMe)
+
+	// Logout requires auth + CSRF protection (it's a POST request)
+	protected.POST("/auth/logout", userHandler.Logout, middleware.CSRFMiddleware())
+
+	// Counter endpoints (protected)
+	protected.GET("/counter", counterHandler.GetCounter)
+
+	// Counter POST requires auth + CSRF protection
+	protected.POST("/counter", counterHandler.IncrementCounter, middleware.CSRFMiddleware())
 }
 
 // SetupHealthRoutes configures health check routes

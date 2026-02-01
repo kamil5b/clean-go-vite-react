@@ -1,27 +1,17 @@
 import { GetCounter } from "@/types/response/counter";
-
-const API_BASE_URL = "http://localhost:8080/api";
+import { apiClientJson } from "@/lib/apiClient";
 
 export const counterApi = {
     getCounter: async (): Promise<GetCounter> => {
-        const response = await fetch(`${API_BASE_URL}/counter`, {
+        return apiClientJson<GetCounter>("/counter", {
             method: "GET",
         });
-        if (!response.ok) {
-            throw new Error(`Failed to fetch counter: ${response.statusText}`);
-        }
-        return response.json();
     },
 
     incrementCounter: async (): Promise<GetCounter> => {
-        const response = await fetch(`${API_BASE_URL}/counter`, {
+        // POST request - will automatically include CSRF token via apiClient
+        return apiClientJson<GetCounter>("/counter", {
             method: "POST",
         });
-        if (!response.ok) {
-            throw new Error(
-                `Failed to increment counter: ${response.statusText}`,
-            );
-        }
-        return response.json();
     },
 };

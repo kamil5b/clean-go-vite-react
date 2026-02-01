@@ -51,7 +51,15 @@ func (h *UserHandler) Register(c echo.Context) error {
 		})
 	}
 
-	// Set HTTP-only cookies
+	// Generate refresh token
+	refreshToken, err := h.tokenService.GenerateRefreshToken(resp.User.ID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "failed to generate refresh token",
+		})
+	}
+
+	// Set HTTP-only cookies for both access and refresh tokens
 	c.SetCookie(&http.Cookie{
 		Name:     middleware.AccessTokenCookie,
 		Value:    resp.Token,
@@ -60,6 +68,16 @@ func (h *UserHandler) Register(c echo.Context) error {
 		Secure:   false, // Set to true in production with HTTPS
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   15 * 60, // 15 minutes
+	})
+
+	c.SetCookie(&http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshToken,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // Set to true in production with HTTPS
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   7 * 24 * 60 * 60, // 7 days
 	})
 
 	return c.JSON(http.StatusCreated, resp)

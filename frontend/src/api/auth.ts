@@ -5,8 +5,7 @@ import {
     CSRFTokenResponse,
     GetUser,
 } from "@/types/response/user";
-
-const API_BASE_URL = "http://localhost:8080/api";
+import { apiClient, apiClientJson } from "@/lib/apiClient";
 
 export const authApi = {
     register: async (
@@ -14,47 +13,29 @@ export const authApi = {
         password: string,
         name: string,
     ): Promise<RegisterResponse> => {
-        const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        return apiClientJson<RegisterResponse>("/auth/register", {
             method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password, name }),
         });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || "Registration failed");
-        }
-
-        return response.json();
     },
 
     login: async (email: string, password: string): Promise<LoginResponse> => {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        return apiClientJson<LoginResponse>("/auth/login", {
             method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
         });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || "Login failed");
-        }
-
-        return response.json();
     },
 
     logout: async (): Promise<void> => {
-        await fetch(`${API_BASE_URL}/auth/logout`, {
+        // Logout is a POST request and requires CSRF protection
+        await apiClient("/auth/logout", {
             method: "POST",
-            credentials: "include",
         });
     },
 
     getCurrentUser: async (): Promise<GetUser | null> => {
-        const response = await fetch(`${API_BASE_URL}/auth/me`, {
-            credentials: "include",
+        const response = await apiClient("/auth/me", {
+            skipAuthRefresh: true, // Don't trigger refresh on initial auth check
         });
 
         if (!response.ok) {
@@ -68,27 +49,13 @@ export const authApi = {
     },
 
     refreshToken: async (): Promise<RefreshResponse> => {
-        const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        // Note: This is called internally by apiClient, but exposed for manual use
+        return apiClientJson<RefreshResponse>("/auth/refresh", {
             method: "POST",
-            credentials: "include",
         });
-
-        if (!response.ok) {
-            throw new Error("Token refresh failed");
-        }
-
-        return response.json();
     },
 
     getCsrfToken: async (): Promise<CSRFTokenResponse> => {
-        const response = await fetch(`${API_BASE_URL}/csrf`, {
-            credentials: "include",
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch CSRF token");
-        }
-
-        return response.json();
+        return apiClientJson<CSRFTokenResponse>("/csrf");
     },
 };
