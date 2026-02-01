@@ -1,8 +1,10 @@
-# Go + Vite + React — Clean Full-Stack Example
+# Go + Vite + React — Clean Full-Stack Example (Lite)
+
+> **Note**: This is a **lite/simplified version** of the main clean-go-vite-react project, focusing on essential features and a streamlined architecture for rapid prototyping and small-to-medium applications.
 
 This repository demonstrates a **clean, detachable integration** between:
 
-* **Go (Echo)** backend API with Clean Architecture
+* **Go (Echo)** backend API with simplified Clean Architecture
 * **Vite + React (TypeScript)** frontend
 * Optional **single-binary deployment** via Go `embed`
 * First-class **Vite HMR** during development
@@ -22,6 +24,23 @@ This project keeps **Vite HMR exactly as-is in development**, while still allowi
 * embedded assets in production
 * a single deployable binary (optional)
 * clean separation between frontend and backend
+
+---
+
+## Lite Version Differences
+
+This lite version provides a **simplified architecture** compared to the full version:
+
+* **Streamlined layers**: `domain` (business logic + models), `infra` (infrastructure), and `api` (HTTP layer)
+* **Faster setup**: Fewer abstractions, quicker to understand and modify
+* **Production-ready foundations**: Still maintains clean separation and testability
+* **Easy to scale up**: Can evolve into the full Clean Architecture when needed
+
+Perfect for:
+- MVPs and prototypes
+- Small-to-medium applications
+- Learning Go + React integration
+- Projects that may need to scale architecture later
 
 ---
 
@@ -45,13 +64,16 @@ If you delete the frontend tomorrow, the backend still builds and runs.
 │   └── server/
 │       └── main.go          # Application entrypoint (composition only)
 │
-├── backend/                # Backend Clean Architecture
+├── backend/                # Backend (Simplified Clean Architecture)
 │   ├── api/               # HTTP layer (handlers, middleware, routes)
-│   ├── service/           # Business logic layer
-│   ├── repository/        # Data access layer (interfaces + implementations)
-│   ├── model/             # Data models (entities, DTOs)
-│   ├── di/                # Dependency injection
-│   └── platform/          # Infrastructure (config, database)
+│   │   ├── handler/       # Request handlers
+│   │   ├── middleware/    # HTTP middleware
+│   │   └── router.go      # Route definitions
+│   ├── domain/            # Business logic + models
+│   │   ├── logic.go       # Business logic implementation
+│   │   └── models.go      # Data models/entities
+│   └── infra/             # Infrastructure (database, config)
+│       └── db.go          # Database initialization
 │
 ├── embedder/              # OPTIONAL web hosting layer
 │   └── embedder.go        # dev proxy + static serving
@@ -68,15 +90,16 @@ If you delete the frontend tomorrow, the backend still builds and runs.
 │   ├── vite.config.ts
 │   └── package.json
 │
+├── scripts/               # Development and build scripts
 ├── Makefile
-├── Dockerfile
 ├── go.mod
+├── main.go               # Legacy entrypoint (delegates to cmd/server)
 └── README.md
 ```
 
 ### Important Distinction
 
-* `backend/` → **application logic**
+* `backend/` → **application logic** (simplified 3-layer architecture)
 * `embedder/` → **optional infrastructure**
 
 The backend does not depend on the frontend to function.
@@ -86,11 +109,13 @@ The backend does not depend on the frontend to function.
 ## Backend Overview (Go)
 
 * Uses **Echo** web framework
-* Implements **Clean Architecture** with strict layer separation
+* Implements a **simplified Clean Architecture** with clear layer separation:
+  - **domain**: Business logic and data models
+  - **infra**: Infrastructure concerns (database, config)
+  - **api**: HTTP layer (handlers, routes, middleware)
 * Exposes APIs under `/api/*`
 * Contains no frontend-specific logic
 * Can be deployed independently as a pure API service
-* Includes JWT authentication, CSRF protection, and comprehensive testing
 
 The backend may optionally:
 
@@ -98,8 +123,6 @@ The backend may optionally:
 * serve embedded static assets in production
 
 These behaviors are **completely removable**.
-
-**For detailed backend documentation, see [`backend/README.md`](./backend/README.md)**
 
 ---
 
@@ -114,7 +137,7 @@ yarn create vite
 * Runs independently with `npm run dev`
 * Uses Vite's dev server and HMR
 * Communicates with backend via HTTP only
-* Includes TypeScript, Tailwind (we use Shadcn), Zod validation, and strict type organization
+* Includes TypeScript, modern tooling, and strict type organization
 
 ### API Proxy (Frontend-Owned)
 
@@ -128,8 +151,6 @@ server: {
 ```
 
 This allows frontend and backend to run on separate ports with no backend awareness of Vite.
-
-**For detailed frontend documentation, see [`frontend/README.md`](./frontend/README.md)**
 
 ---
 
@@ -167,20 +188,6 @@ Run with:
 ```
 
 This mode is optional — the frontend can also be deployed separately.
-
----
-
-## Docker Build
-
-```bash
-docker build -t go-vite-react .
-```
-
-Uses a multi-stage Dockerfile:
-
-1. Node image to build frontend assets
-2. Go image to compile backend with embedded assets
-3. Final Alpine image containing a single binary
 
 ---
 
@@ -235,20 +242,20 @@ Because the architecture is designed for detachment, it takes only a few steps:
 1. **Remove embedder integration** in `cmd/server/main.go`:
    ```go
    // Remove this line:
-   embedder.RegisterHandlers(e)
+   e.Any("/*", echo.WrapHandler(web.Handler()))
    ```
 
-2. **Enable CORS** in `backend/api/router.go`:
+2. **Enable proper CORS** in `cmd/server/main.go`:
    ```go
    e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
        AllowOrigins: []string{"https://your-frontend-domain.com"},
        AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-       AllowHeaders: []string{"Authorization", "Content-Type", "X-CSRF-Token"},
+       AllowHeaders: []string{"Authorization", "Content-Type"},
        AllowCredentials: true,
    }))
    ```
 
-3. **Delete embedder directory**:
+3. **Delete embedder directory** (optional):
    ```bash
    rm -rf embedder/
    ```
@@ -290,23 +297,74 @@ Because the architecture is designed for detachment, it takes only a few steps:
 
 ---
 
-## Documentation
+## Getting Started
 
-### Other Guides
-- **[AUTH.md](./AUTH.md)** - Authentication implementation guide
+### Prerequisites
 
-### Component Documentation
-- **[backend/README.md](./backend/README.md)** - Complete backend architecture guide (Clean Architecture, TDD workflow)
-- **[frontend/README.md](./frontend/README.md)** - Frontend structure and type rules
+- Go 1.21+
+- Node.js 18+
+- Make (optional, but recommended)
+
+### Quick Start
+
+1. **Clone and setup**:
+   ```bash
+   git clone <repository-url>
+   cd clean-go-vite-react
+   ```
+
+2. **Install frontend dependencies**:
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+3. **Run development mode**:
+   ```bash
+   make dev
+   ```
+
+4. **Visit**:
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8080/api
+
+---
+
+## Available Commands
+
+```bash
+make dev          # Start development servers (Go + Vite)
+make build        # Build production binary with embedded frontend
+make build-fe     # Build frontend only
+make build-be     # Build backend only
+make clean        # Clean build artifacts
+make test         # Run tests
+```
 
 ---
 
 ## Notes & Gotchas
 
 * Even in dev mode, the Go build requires embedded assets to exist.
-  Run `make build` once initially to populate `frontend/dist`.
+  Run `make build-fe` once initially to populate `frontend/dist`.
 * All API routes should live under `/api/*`.
 * Avoid importing frontend artifacts into backend code.
+* The `main.go` in root is deprecated - use `cmd/server/main.go` instead.
+
+---
+
+## Scaling to Full Clean Architecture
+
+When your application grows, you can evolve this lite version to the full Clean Architecture:
+
+1. Split `domain/logic.go` into separate service layer
+2. Extract repository interfaces and implementations from `domain`
+3. Add dependency injection container
+4. Introduce use cases / interactors
+5. Add comprehensive testing layers
+
+The simplified structure makes this evolution straightforward without major rewrites.
 
 ---
 
@@ -317,4 +375,4 @@ Original inspiration from:
 * [Embedding Vite into Go (YouTube)](https://www.youtube.com/watch?v=w_Rv_3-FF0g)
 * Original example by @danhawkins
 
-This fork focuses on **clean boundaries and long-term maintainability**.
+This lite fork focuses on **simplicity, speed, and clean boundaries** while maintaining the flexibility to scale.
