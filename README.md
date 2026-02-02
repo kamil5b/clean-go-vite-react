@@ -95,6 +95,8 @@ The backend does not depend on the frontend to function.
 * Contains no frontend-specific logic
 * Can be deployed independently as a pure API service
 * Includes JWT authentication, CSRF protection, and comprehensive testing
+* **Full CRUD implementation** for Items, Tags, and Invoices with relationships
+* **UUID-based primary keys** for all entities (except auto-increment for Items, Tags, and Invoices)
 
 The backend may optionally use the `embedder` package to:
 
@@ -134,6 +136,16 @@ server: {
 ```
 
 This allows frontend and backend to run on separate ports with no backend awareness of Vite.
+
+### Key Features
+
+* **Multi-select dropdowns** with infinite scroll for Items and Tags
+* **Real-time search** with debounced API calls
+* **Paginated tables** for all CRUD operations
+* **Modal forms** for Item and Tag management
+* **Full-page forms** for Invoice management with line items
+* **Type-safe API client** with Zod validation
+* Strict type organization: all API types defined in `src/types/`
 
 **For detailed frontend documentation, see [`frontend/README.md`](./frontend/README.md)**
 
@@ -310,6 +322,73 @@ Because the architecture is designed for detachment, it takes only a few steps:
 **The entire detachment takes less than 10 minutes** because the architecture never couples them in the first place.
 
 ---
+
+## Features
+
+### Implemented CRUD Operations
+
+The application includes complete CRUD functionality for:
+
+#### Items
+- Create, Read, Update, Delete operations
+- Pagination with configurable page size
+- Search by name
+- Modal-based forms
+- Soft deletes with `deleted_at` timestamp
+
+#### Tags
+- Create, Read, Update, Delete operations
+- Pagination with configurable page size
+- Search by name
+- Color picker with hex code validation
+- Modal-based forms
+- Used for categorizing invoices
+
+#### Invoices
+- Create, Read, Update, Delete operations
+- Pagination with configurable page size
+- Search by ID
+- **Line items** with quantity, unit price, and total calculation
+- **Many-to-many relationship** with Tags
+- Multi-select dropdowns with infinite scroll for selecting items and tags
+- Automatic grand total calculation
+- Full-page forms with item table editor
+- Detailed view page showing all invoice information
+
+### Data Models
+
+All entities use **UUID for user-related data** (authentication) and **auto-increment integers** for business entities (Items, Tags, Invoices). Key relationships:
+
+- **Invoice → Invoice Items** (one-to-many)
+- **Invoice → Tags** (many-to-many via junction table)
+- **Invoice Item → Item** (many-to-one)
+
+### API Endpoints
+
+All endpoints are protected with JWT authentication and CSRF protection on mutations:
+
+```
+# Items
+GET    /api/items              # List with pagination & search
+POST   /api/items              # Create (CSRF protected)
+GET    /api/items/:id          # Get by ID
+PUT    /api/items/:id          # Update (CSRF protected)
+DELETE /api/items/:id          # Delete (CSRF protected)
+
+# Tags
+GET    /api/tags               # List with pagination & search
+POST   /api/tags               # Create (CSRF protected)
+GET    /api/tags/:id           # Get by ID
+PUT    /api/tags/:id           # Update (CSRF protected)
+DELETE /api/tags/:id           # Delete (CSRF protected)
+
+# Invoices
+GET    /api/invoices           # List with pagination & search
+POST   /api/invoices           # Create with items & tags (CSRF protected)
+GET    /api/invoices/:id       # Get with all relations
+PUT    /api/invoices/:id       # Update (replaces items & tags) (CSRF protected)
+DELETE /api/invoices/:id       # Delete (CSRF protected)
+```
 
 ## Documentation
 
