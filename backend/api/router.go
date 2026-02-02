@@ -13,6 +13,7 @@ func SetupRoutes(e *echo.Echo, logic handler.Logic) {
 	messageHandler := handler.NewMessageHandler(logic)
 	counterHandler := handler.NewCounterHandler(logic)
 	userHandler := handler.NewUserHandler(logic)
+	notFoundHandler := handler.NewNotFoundHandler()
 
 	// API group
 	api := e.Group("/api")
@@ -34,4 +35,7 @@ func SetupRoutes(e *echo.Echo, logic handler.Logic) {
 	protected := api.Group("")
 	protected.Use(middleware.AuthMiddleware(logic))
 	protected.GET("/auth/me", userHandler.GetMe)
+
+	// 404 handler for undefined API endpoints (must be last)
+	api.Any("/*", notFoundHandler.Handle)
 }
