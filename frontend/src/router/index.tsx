@@ -5,6 +5,11 @@ import {
     LoginPage,
     RegisterPage,
     NotFoundPage,
+    ItemsPage,
+    TagsPage,
+    InvoicesPage,
+    InvoiceFormPage,
+    InvoiceDetailPage,
 } from "@/pages";
 import { RootLayout } from "@/layouts/RootLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -22,6 +27,54 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <CounterPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/items",
+                element: (
+                    <ProtectedRoute>
+                        <ItemsPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/tags",
+                element: (
+                    <ProtectedRoute>
+                        <TagsPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/invoices",
+                element: (
+                    <ProtectedRoute>
+                        <InvoicesPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/invoices/create",
+                element: (
+                    <ProtectedRoute>
+                        <InvoiceFormPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/invoices/:id",
+                element: (
+                    <ProtectedRoute>
+                        <InvoiceDetailPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/invoices/:id/edit",
+                element: (
+                    <ProtectedRoute>
+                        <InvoiceFormPage />
                     </ProtectedRoute>
                 ),
             },

@@ -3,3 +3,8 @@ export * from "./HomePage";
 export * from "./LoginPage";
 export * from "./RegisterPage";
 export * from "./NotFoundPage";
+export { default as ItemsPage } from "./ItemsPage";
+export { default as TagsPage } from "./TagsPage";
+export { default as InvoicesPage } from "./InvoicesPage";
+export { default as InvoiceFormPage } from "./InvoiceFormPage";
+export { default as InvoiceDetailPage } from "./InvoiceDetailPage";
