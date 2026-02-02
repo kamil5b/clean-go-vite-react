@@ -16,7 +16,7 @@ export function NavBar() {
 
     const navItems = [
         { label: "Home", href: "/" },
-        ...(isAuthenticated ? [{ label: "Counter", href: "/counter" }] : []),
+        ...(isAuthenticated ? [{ label: "Items", href: "/items" }] : []),
     ];
 
     const isActive = (href: string) => location.pathname === href;

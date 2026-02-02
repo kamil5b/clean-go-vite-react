@@ -81,10 +81,11 @@ If you delete the frontend tomorrow, the backend still builds and runs.
 ├── frontend/              # Standalone Vite + React app
 │   ├── src/
 │   │   ├── api/          # API client modules
-│   │   ├── types/        # TypeScript type definitions
-│   │   ├── components/   # React components
+│   │   ├── components/   # React components (UI library)
+│   │   ├── contexts/     # React contexts (auth, etc)
 │   │   ├── hooks/        # Custom React hooks
 │   │   ├── pages/        # Page components
+│   │   ├── router/       # Routing configuration
 │   │   └── ...
 │   ├── index.html
 │   ├── vite.config.ts
@@ -123,6 +124,72 @@ The backend may optionally:
 * serve embedded static assets in production
 
 These behaviors are **completely removable**.
+
+---
+
+## Features
+
+### Authentication
+
+* User registration and login with JWT tokens
+* HTTP-only cookies for token storage
+* Protected routes with authentication middleware
+* Session management with `useAuth` hook
+
+### Items CRUD
+
+A complete Items management system demonstrating full-stack CRUD operations:
+
+#### Backend API Endpoints
+
+All item endpoints require authentication via JWT token.
+
+- `POST /api/items` — Create a new item
+  - Request: `{ "title": string, "description": string }`
+  - Response: `ItemInfo`
+
+- `GET /api/items` — List all items for the authenticated user
+  - Response: `ItemInfo[]`
+
+- `GET /api/items/:id` — Get a single item
+  - Response: `ItemInfo`
+
+- `PUT /api/items/:id` — Update an item
+  - Request: `{ "title": string, "description": string }`
+  - Response: `ItemInfo`
+
+- `DELETE /api/items/:id` — Delete an item
+  - Response: `204 No Content`
+
+#### Item Model
+
+```go
+type Item struct {
+    ID          uuid.UUID
+    Title       string
+    Description string
+    UserID      uuid.UUID  // Ownership validation
+    CreatedAt   time.Time
+    UpdatedAt   time.Time
+}
+```
+
+#### Frontend Implementation
+
+- **API Client** (`frontend/src/api/items.ts`) — RESTful API methods for all CRUD operations
+- **Custom Hook** (`frontend/src/hooks/useItems.ts`) — State management for items with loading and error handling
+- **Page Component** (`frontend/src/pages/ItemsPage.tsx`) — Full UI for creating, viewing, editing, and deleting items
+- **UI Components** — Uses the project's component library (Card, Table, Button, Field) for consistent styling
+
+#### Features
+
+- ✅ Create items with title and description
+- ✅ View all items in a sortable table
+- ✅ Edit items inline with form validation
+- ✅ Delete items with confirmation
+- ✅ Automatic owner validation (users can only access their items)
+- ✅ Responsive design with Tailwind CSS
+- ✅ Error handling and loading states
 
 ---
 
@@ -329,6 +396,8 @@ Because the architecture is designed for detachment, it takes only a few steps:
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:8080/api
 
+5. **Create an account** and start managing items!
+
 ---
 
 ## Available Commands
@@ -351,6 +420,7 @@ make test         # Run tests
 * All API routes should live under `/api/*`.
 * Avoid importing frontend artifacts into backend code.
 * The `main.go` in root is deprecated - use `cmd/server/main.go` instead.
+* All protected endpoints require authentication via JWT token in HTTP-only cookies or Authorization header.
 
 ---
 

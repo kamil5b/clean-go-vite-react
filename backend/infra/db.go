@@ -75,8 +75,8 @@ func NewDB(cfg Config) (*DB, error) {
 func (db *DB) migrate() error {
 	return db.conn.AutoMigrate(
 		&domain.Message{},
-		&domain.Counter{},
 		&domain.User{},
+		&domain.Item{},
 	)
 }
 
@@ -96,19 +96,6 @@ func (db *DB) seed() error {
 		}
 	}
 
-	// Seed default counter
-	var counterCount int64
-	db.conn.Model(&domain.Counter{}).Count(&counterCount)
-	if counterCount == 0 {
-		counter := domain.Counter{
-			ID:    uuid.New(),
-			Value: 0,
-		}
-		if err := db.conn.Create(&counter).Error; err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -124,36 +111,6 @@ func (db *DB) GetMessage(ctx context.Context, key string) (*domain.Message, erro
 		return nil, err
 	}
 	return &message, nil
-}
-
-// Counter operations
-
-// GetCounter retrieves the current counter value
-func (db *DB) GetCounter(ctx context.Context) (int, error) {
-	var counter domain.Counter
-	if err := db.conn.WithContext(ctx).First(&counter).Error; err != nil {
-		return 0, err
-	}
-	return counter.Value, nil
-}
-
-// IncrementCounter atomically increments the counter and returns the new value
-func (db *DB) IncrementCounter(ctx context.Context) (int, error) {
-	var counter domain.Counter
-
-	err := db.conn.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := tx.First(&counter).Error; err != nil {
-			return err
-		}
-		counter.Value++
-		return tx.Save(&counter).Error
-	})
-
-	if err != nil {
-		return 0, err
-	}
-
-	return counter.Value, nil
 }
 
 // User operations
@@ -185,4 +142,42 @@ func (db *DB) FindUserByID(ctx context.Context, id uuid.UUID) (*domain.User, err
 		return nil, err
 	}
 	return &user, nil
+}
+
+// Item operations
+
+// CreateItem creates a new item
+func (db *DB) CreateItem(ctx context.Context, item *domain.Item) error {
+	return db.conn.WithContext(ctx).Create(item).Error
+}
+
+// GetItems retrieves all items for a user
+func (db *DB) GetItems(ctx context.Context, userID uuid.UUID) ([]*domain.Item, error) {
+	var items []*domain.Item
+	if err := db.conn.WithContext(ctx).Where("user_id = ?", userID).Order("created_at DESC").Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+// GetItemByID retrieves an item by ID
+func (db *DB) GetItemByID(ctx context.Context, id uuid.UUID) (*domain.Item, error) {
+	var item domain.Item
+	if err := db.conn.WithContext(ctx).First(&item, "id = ?", id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("item not found")
+		}
+		return nil, err
+	}
+	return &item, nil
+}
+
+// UpdateItem updates an existing item
+func (db *DB) UpdateItem(ctx context.Context, item *domain.Item) error {
+	return db.conn.WithContext(ctx).Save(item).Error
+}
+
+// DeleteItem deletes an item
+func (db *DB) DeleteItem(ctx context.Context, id uuid.UUID) error {
+	return db.conn.WithContext(ctx).Delete(&domain.Item{}, "id = ?", id).Error
 }

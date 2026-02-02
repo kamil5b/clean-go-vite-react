@@ -23,14 +23,17 @@ type DB interface {
 	// Message
 	GetMessage(ctx context.Context, key string) (*Message, error)
 
-	// Counter
-	GetCounter(ctx context.Context) (int, error)
-	IncrementCounter(ctx context.Context) (int, error)
-
 	// User
 	CreateUser(ctx context.Context, user *User) error
 	FindUserByEmail(ctx context.Context, email string) (*User, error)
 	FindUserByID(ctx context.Context, id uuid.UUID) (*User, error)
+
+	// Item
+	CreateItem(ctx context.Context, item *Item) error
+	GetItems(ctx context.Context, userID uuid.UUID) ([]*Item, error)
+	GetItemByID(ctx context.Context, id uuid.UUID) (*Item, error)
+	UpdateItem(ctx context.Context, item *Item) error
+	DeleteItem(ctx context.Context, id uuid.UUID) error
 }
 
 // NewLogic creates a new domain logic instance
@@ -51,18 +54,6 @@ func (l *Logic) GetMessage(ctx context.Context) (string, error) {
 		return "", err
 	}
 	return msg.Value, nil
-}
-
-// Counter operations
-
-// GetCounter returns the current counter value
-func (l *Logic) GetCounter(ctx context.Context) (int, error) {
-	return l.db.GetCounter(ctx)
-}
-
-// IncrementCounter increments and returns the new counter value
-func (l *Logic) IncrementCounter(ctx context.Context) (int, error) {
-	return l.db.IncrementCounter(ctx)
 }
 
 // User operations
@@ -185,6 +176,16 @@ type UserInfo struct {
 	Name  string    `json:"name"`
 }
 
+// ItemInfo represents item information for API responses
+type ItemInfo struct {
+	ID          uuid.UUID `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	UserID      uuid.UUID `json:"user_id"`
+	CreatedAt   string    `json:"created_at"`
+	UpdatedAt   string    `json:"updated_at"`
+}
+
 // TokenClaims represents JWT claims
 type TokenClaims struct {
 	UserID uuid.UUID `json:"sub"`
@@ -194,6 +195,77 @@ type TokenClaims struct {
 }
 
 // Private methods
+
+// Item operations
+
+// CreateItem creates a new item
+func (l *Logic) CreateItem(ctx context.Context, title, description string, userID uuid.UUID) (*Item, error) {
+	item := &Item{
+		ID:          uuid.New(),
+		Title:       title,
+		Description: description,
+		UserID:      userID,
+	}
+
+	if err := l.db.CreateItem(ctx, item); err != nil {
+		return nil, err
+	}
+
+	return item, nil
+}
+
+// GetItems retrieves all items for a user
+func (l *Logic) GetItems(ctx context.Context, userID uuid.UUID) ([]*Item, error) {
+	return l.db.GetItems(ctx, userID)
+}
+
+// GetItemByID retrieves an item by ID
+func (l *Logic) GetItemByID(ctx context.Context, id uuid.UUID) (*Item, error) {
+	return l.db.GetItemByID(ctx, id)
+}
+
+// UpdateItem updates an existing item
+func (l *Logic) UpdateItem(ctx context.Context, id uuid.UUID, title, description string) (*Item, error) {
+	item, err := l.db.GetItemByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	item.Title = title
+	item.Description = description
+
+	if err := l.db.UpdateItem(ctx, item); err != nil {
+		return nil, err
+	}
+
+	return item, nil
+}
+
+// DeleteItem deletes an item
+func (l *Logic) DeleteItem(ctx context.Context, id uuid.UUID) error {
+	return l.db.DeleteItem(ctx, id)
+}
+
+// ItemToInfo converts an Item to ItemInfo for API responses
+func ItemToInfo(item *Item) *ItemInfo {
+	return &ItemInfo{
+		ID:          item.ID,
+		Title:       item.Title,
+		Description: item.Description,
+		UserID:      item.UserID,
+		CreatedAt:   item.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   item.UpdatedAt.Format(time.RFC3339),
+	}
+}
+
+// ItemsToInfoList converts a slice of Items to ItemInfo slice
+func ItemsToInfoList(items []*Item) []*ItemInfo {
+	result := make([]*ItemInfo, len(items))
+	for i, item := range items {
+		result[i] = ItemToInfo(item)
+	}
+	return result
+}
 
 func (l *Logic) generateToken(userID uuid.UUID, email, name string) (string, error) {
 	claims := &TokenClaims{

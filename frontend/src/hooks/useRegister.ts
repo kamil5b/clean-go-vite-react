@@ -45,7 +45,7 @@ export function useRegister(): UseRegisterReturn {
 
         try {
             await register(email, password, name);
-            navigate("/counter");
+            navigate("/");
         } catch (err) {
             setError(
                 err instanceof Error ? err.message : "Registration failed",
