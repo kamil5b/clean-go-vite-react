@@ -92,7 +92,7 @@ func NewContainer(cfg *platform.Config) *Container {
 	}
 
 	// Setup routes with dependencies
-	api.SetupRoutes(e, *handlers.Message, *handlers.Counter, handlers.User, services.Token)
+	api.SetupRoutes(e, *handlers.Message, *handlers.Counter, handlers.User, services.Token, handler.NewNotFoundHandler())
 	e.GET("/api/health", handlers.Health.Check)
 
 	return &Container{

@@ -1,5 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
-import { HomePage, CounterPage, LoginPage, RegisterPage } from "@/pages";
+import {
+    HomePage,
+    CounterPage,
+    LoginPage,
+    RegisterPage,
+    NotFoundPage,
+} from "@/pages";
 import { RootLayout } from "@/layouts/RootLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -26,6 +32,10 @@ const router = createBrowserRouter([
             {
                 path: "/register",
                 element: <RegisterPage />,
+            },
+            {
+                path: "*",
+                element: <NotFoundPage />,
             },
         ],
     },

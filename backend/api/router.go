@@ -14,6 +14,7 @@ func SetupRoutes(
 	counterHandler handler.CounterHandler,
 	userHandler *handler.UserHandler,
 	tokenService token.TokenService,
+	notFoundHandler *handler.NotFoundHandler,
 ) {
 	api := e.Group("/api")
 
@@ -41,6 +42,7 @@ func SetupRoutes(
 
 	// Counter POST requires auth + CSRF protection
 	protected.POST("/counter", counterHandler.IncrementCounter, middleware.CSRFMiddleware())
+	api.Any("/*", notFoundHandler.Handle)
 }
 
 // SetupHealthRoutes configures health check routes
