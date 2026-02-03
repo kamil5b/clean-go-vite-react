@@ -1,12 +1,14 @@
 # Go + Vite + React — Clean Full-Stack Example
 
+A single-binary full-stack app that keeps frontend and backend cleanly separated, with an explicit and easy detachment path.
+
 This repository demonstrates a **clean, detachable integration** between:
 
 * **Go** backend API with Clean Architecture
 * **Vite + React (TypeScript)** frontend
-* Optional **single-binary deployment** via Go `embed`
+* **Single-binary deployment** via Go `embed` that easy to detach
 * First-class **Vite HMR** during development
-* **Framework-agnostic** frontend serving layer
+* **Framework-agnostic** frontend and backend serving layer
 
 The key goal is to support a great developer experience **without coupling frontend and backend**, so they can be separated later with minimal changes.
 
@@ -113,7 +115,7 @@ These behaviors are **completely removable**.
 
 ## Frontend Overview (Vite + React)
 
-The `frontend/` directory is a **normal Vite project**, created with:
+The `frontend/` directory is a **Vite project with Tailwind support**, created with:
 
 ```bash
 yarn create vite
